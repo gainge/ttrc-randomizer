@@ -46,7 +46,6 @@
  */
 
 includeJs("seedrandom.js");
-initializeDatabase();
 
 var resultBox = document.querySelector('#result');
 var stageBox = document.querySelector('#stage');
@@ -69,7 +68,6 @@ var speedrunCodesCheckbox = document.querySelector('#speedrun-codes');
 var codeDetailsDiv = document.querySelector('#code-details');
 
 var getRandom;
-var db;
 
 function randomize(seed, schema) {
 	if (!schema) schema = 2;
@@ -150,21 +148,6 @@ function randomize(seed, schema) {
 	resultBox.value = code;
 	idBox.value = encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
 		reduceImpossible, enableSpeedrunCodes, enableWinCondition, winCondition);
-
-	var updateObject = {};
-	if (load) {
-		updateObject["load_counter"] = firebase.database.ServerValue.increment(1);
-	} else {
-		updateObject["randomize_counter"] = firebase.database.ServerValue.increment(1);
-		updateObject["stage_counter_" + stage] = firebase.database.ServerValue.increment(1);
-		updateObject["targets_counter_" + numTargets] = firebase.database.ServerValue.increment(1);
-		if (spawn) updateObject["spawn_counter"] = firebase.database.ServerValue.increment(1);
-		if (mismatch) updateObject["mismatch_counter"] = firebase.database.ServerValue.increment(1);
-		if (reduceImpossible) updateObject["reduce_counter"] = firebase.database.ServerValue.increment(1);
-		if (enableSpeedrunCodes) updateObject["codes_counter"] = firebase.database.ServerValue.increment(1);
-		if (enableWinCondition) updateObject["win_counter_" + winCondition] = firebase.database.ServerValue.increment(1);
-	}
-	db.update(updateObject);
 }
 
 function getCode(stage, spawn) {
@@ -846,25 +829,6 @@ function includeJs(jsFilePath) {
     js.type = "text/javascript";
     js.src = jsFilePath;
     document.body.appendChild(js);
-}
-
-function initializeDatabase() {
-	var firebaseConfig = {
-		apiKey: "AIzaSyBzmvCfvumHNbr0aYxzTQLvnuWAEjXLwlQ",
-		authDomain: "bttrandomizer.firebaseapp.com",
-		databaseURL: "https://bttrandomizer.firebaseio.com",
-		projectId: "bttrandomizer",
-		storageBucket: "bttrandomizer.appspot.com",
-		messagingSenderId: "543190615441",
-		appId: "1:543190615441:web:bd9b80541ebe2bc6568630"
-	};
-	firebase.initializeApp(firebaseConfig);
-
-	db = firebase.database().ref();
-	// db.on("value", function(snapshot) {
-	// 	var data = snapshot.val();
-	// 	document.querySelector('#counter').value = data.randomize_counter
-	// });
 }
 
 /*
