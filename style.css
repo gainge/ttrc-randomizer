@@ -1,0 +1,24 @@
+body {
+    margin-left: 10px;
+}
+
+.button {
+    font-size: 25px;
+}
+
+.copyButton {
+    width: 160px;
+}
+
+.codeArea {
+    height: 300px;
+    width: 160px;
+}
+
+td {
+    vertical-align: top;
+}
+
+ul {
+    margin-top: 0px;
+}
