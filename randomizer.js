@@ -58,6 +58,33 @@ const TTRC_EXCLUSIONS = [
 	[44, 40, 33], // marth
 	[25, 46, 47], // roy
 ]
+const CHAR_STRINGS = [
+	"Doc",
+	"Mario",
+	"Luigi",
+	"Bowser",
+	"Peach",
+	"Yoshi",
+	"DK",
+	"Falcon",
+	"Ganon",
+	"Falco",
+	"Fox",
+	"Ness",
+	"ICs",
+	"Kirby",
+	"Samus",
+	"Sheik",
+	"Link",
+	"Young Link",
+	"Pichu",
+	"Pika",
+	"Puff",
+	"Mewtwo",
+	"Game & Watch",
+	"Marth",
+	"Roy",
+]
 const numChars = TTRC_EXCLUSIONS.length
 
 
@@ -166,8 +193,24 @@ function buildPath() {
 	buildHamiltonian(graph, visited, parent, path)
 
 	console.log(path);
-	
+
 	return;
+}
+
+function isUniqueMismatch(mismatchMap, seed) {
+	for (let i = 0; i < mismatchMap.length; i++) {
+		// Check against TTRC Exclusions (with offset :P)
+		const char = mismatchMap[i];
+
+		if (TTRC_EXCLUSIONS[char].includes(i + 25)) {
+			console.log("[" + seed + "] Failed! -> " + CHAR_STRINGS[char] + " on " + CHAR_STRINGS[i] + " (TTRC" + (TTRC_EXCLUSIONS[char].indexOf(i + 25) + 1) + ")");
+			return false;
+		}
+	}
+
+	console.log("Success! " + seed);
+	console.log(mismatchMap);
+	return true;
 }
 
 
@@ -175,82 +218,91 @@ function buildPath() {
 
 
 function randomize(seed, schema) { // Entry point for randomize click
-	if (!schema) schema = 2;
 
-	var load = true;
-	if (!seed) {
-		getRandom = new Math.seedrandom();
-		seed = Math.floor(getRandom() * Number.MAX_SAFE_INTEGER);
-		load = false;
-	}
-	getRandom = new Math.seedrandom(seed);
+	while (true) {
+		if (!schema) schema = 2;
 
-	var stage = ALL; // var stage = getStage();
-	var numTargets = 10; // var numTargets = getNumTargets(stage);
-	var spawn = true; // var spawn = isSpawn();
-	var mismatch = true; // var mismatch = isMismatch();
-	var reduceImpossible = true; // var reduceImpossible = isReduceImpossible();
-	var enableSpeedrunCodes = true; // var enableSpeedrunCodes = isSpeedrunCodes();
-	var enableWinCondition = false; // var enableWinCondition = isWinCondition();
-	var winCondition = 10; // var winCondition = getWinCondition();
+		var load = true;
+		if (!seed) {
+			getRandom = new Math.seedrandom();
+			seed = Math.floor(getRandom() * Number.MAX_SAFE_INTEGER);
+			load = false;
+		}
+		getRandom = new Math.seedrandom(seed);
 
-	if (isNaN(numTargets) || numTargets < 1 || numTargets > 255) {
-		resultBox.value = "Number of targets must be a number between 1 and 255."
-		return;
-	}
+		var stage = ALL; // var stage = getStage();
+		var numTargets = 10; // var numTargets = getNumTargets(stage);
+		var spawn = true; // var spawn = isSpawn();
+		var mismatch = true; // var mismatch = isMismatch();
+		var reduceImpossible = true; // var reduceImpossible = isReduceImpossible();
+		var enableSpeedrunCodes = true; // var enableSpeedrunCodes = isSpeedrunCodes();
+		var enableWinCondition = false; // var enableWinCondition = isWinCondition();
+		var winCondition = 10; // var winCondition = getWinCondition();
 
-	if (enableWinCondition && (isNaN(winCondition) || winCondition < 1 || winCondition > numTargets)) {
-		resultBox.value = "Win condition must be a number between 1 and the number of targets."
-		return;
-	}
+		if (isNaN(numTargets) || numTargets < 1 || numTargets > 255) {
+			resultBox.value = "Number of targets must be a number between 1 and 255."
+			return;
+		}
 
-	var code = "";
-	if (stage == ALL) {
-		if (schema == 1) {
-			code = getAllStagesCode(spawn, schema);
-			if (mismatch) {
-				var mismatchObject = getMismatchCode();
-				code += '\n' + mismatchObject['code'];
-			}
-		} else {
-			if (mismatch) {
-				mismatchObject = getMismatchCode();
-				if (reduceImpossible) {
-					code = getAllStagesCode(spawn, schema, mismatchObject['map']);
+		if (enableWinCondition && (isNaN(winCondition) || winCondition < 1 || winCondition > numTargets)) {
+			resultBox.value = "Win condition must be a number between 1 and the number of targets."
+			return;
+		}
+
+		var code = "";
+		if (stage == ALL) {
+			if (schema == 1) {
+				code = getAllStagesCode(spawn, schema);
+				if (mismatch) {
+					var mismatchObject = getMismatchCode();
+					code += '\n' + mismatchObject['code'];
+				}
+			} else {
+				if (mismatch) {
+					mismatchObject = getMismatchCode();
+					if (reduceImpossible) {
+						code = getAllStagesCode(spawn, schema, mismatchObject['map']);
+					} else {
+						code = getAllStagesCode(spawn, schema);
+					}
+					code += '\n' + mismatchObject['code'];
 				} else {
 					code = getAllStagesCode(spawn, schema);
 				}
-				code += '\n' + mismatchObject['code'];
-			} else {
-				code = getAllStagesCode(spawn, schema);
 			}
+		} else if (stage == RANDOM) {
+			stage = Math.floor(getRandom() * stageHooks.length);
+			stageBox.value = stage.toString();
+			code = getCode(stage, spawn);
+		} else {
+			code = getCode(stage, spawn);
 		}
-	} else if (stage == RANDOM) {
-		stage = Math.floor(getRandom() * stageHooks.length);
-		stageBox.value = stage.toString();
-		code = getCode(stage, spawn);
-	} else {
-		code = getCode(stage, spawn);
+
+		code += '\n' + defaultCodes;
+
+		if (enableSpeedrunCodes) {
+			code += '\n' + speedrunCodes;
+		}
+
+		if (numTargets > 15 && !enableSpeedrunCodes) {
+			code += '\n' + targetCounterCode;
+		}
+
+		if (enableWinCondition && winCondition != numTargets) {
+			code += '\n' + winConditionCode + winCondition.toString(16).padStart(2, '0').toUpperCase();
+			code += '\n' + noScoreFix;
+		}
+
+		resultBox.value = code;
+		idBox.value = encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
+			reduceImpossible, enableSpeedrunCodes, enableWinCondition, winCondition);
+
+		if (isUniqueMismatch(mismatchObject.map, idBox.value)) {
+			break;
+		} else {
+			seed = undefined;
+		}
 	}
-
-	code += '\n' + defaultCodes;
-
-	if (enableSpeedrunCodes) {
-		code += '\n' + speedrunCodes;
-	}
-
-	if (numTargets > 15 && !enableSpeedrunCodes) {
-		code += '\n' + targetCounterCode;
-	}
-
-	if (enableWinCondition && winCondition != numTargets) {
-		code += '\n' + winConditionCode + winCondition.toString(16).padStart(2, '0').toUpperCase();
-		code += '\n' + noScoreFix;
-	}
-
-	resultBox.value = code;
-	idBox.value = encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
-		reduceImpossible, enableSpeedrunCodes, enableWinCondition, winCondition);
 }
 
 function getCode(stage, spawn) {
