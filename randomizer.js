@@ -1,50 +1,3 @@
-/*
- * Randomizer developed by djwang88
- * Current version: 2.0
- * ---------
- * CHANGELOG
- * ---------
- * [2020-09-01] First version (version 0.1)
- * [2020-09-01] Fixed Zelda bounds (decreased y2)
- * [2020-09-04] Fixed Pichu exclusions (Boundary 5)
- * [2020-09-05] Spawn randomizer proof of concept (Link)
- * [2020-09-06] Random stage feature
- * [2020-09-06] Fixed Link exclusion (Boundary 5) (discovered by chaos6)
- * [2020-09-06] Fixed Young Link exception (discovered by chaos6)
- * [2020-09-06] New randomizer template using halfwords (fixes Mewtwo) (version 0.2)
- * [2020-09-06] Arbitrary targets feature for individual stages & modular code builder
- * [2020-09-07] Adjusted Samus bounds (increased x2)
- * [2020-09-07] Arbitrary targets feature for all stages code (version 0.3)
- * [2020-09-07] Updated short codes to handle Mewtwo's targets
- * [2020-09-07] Added mismatch randomizer feature (version 0.4)
- * [2020-09-07] Added spawn randomizer feature (version 0.5)
- * [2020-09-07] Adjusted Ness bounds (decreased y2)
- * [2020-09-07] Adjusted Link bounds (decreased x2)
- * [2020-09-08] New compact mismatch randomizer template
- * [2020-09-08] Adjusted Dr. Mario, Peach spawns
- * [2020-09-09] Adjusted DK bounds (increased x2)
- * [2020-09-09] Added Ice Climbers exclusion (Boundary 3)
- * [2020-09-09] Adjusted Falco bounds (increased y2) and fixed exclusion (Boundary 6)
- * [2020-09-09] Adjusted Captain Falcon bounds (increased y2)
- * [2020-09-09] Fixed Kirby spawn (5)
- * [2020-09-09] Randomizer ID feature (version 0.6)
- * [2020-09-14] Validation for randomizer ID
- * [2020-09-15] Adjusted Peach spawn (5), Yoshi spawn (3)
- * [2020-09-15] First official release (version 1.0)
- * [2020-09-16] Fixed Young Link exclusion (Boundary 10)
- * [2020-09-16] Added warning for Gecko code limits
- * [2020-09-18] New version of mismatch randomizer code to only affect target stages
- * [2020-09-29] Target counter feature (version 1.1)
- * [2020-10-06] Fixed issue with Mario/Luigi/Bowser spawn differentials
- * [2020-10-26] Reduce impossible seeds feature
- * [2020-11-01] Fixed issue with Ice Climbers mismatch instadeath
- * [2020-11-06] Options added for speedrun codes, win condition, and reduce impossible
- * [2020-12-09] Adjusted Luigi center spawn and Mewtwo skinny spawns -0.1 for Popo
- * [2020-12-10] Second official release (version 2.0)
- * [2020-12-17] Moved several codes to default codes
- * [2020-08-16] Fixed issue with win condition code resulting in no score
- */
-
 includeJs("seedrandom.js");
 
 var resultBox = document.querySelector('#result');
@@ -69,7 +22,77 @@ var codeDetailsDiv = document.querySelector('#code-details');
 
 var getRandom;
 
-function randomize(seed, schema) {
+const settings = {
+	allStages: true,
+	numTargets: 10,
+	randomSpawn: true,
+	reduceImpossible: true,
+	randomMismatch: true,
+	speedrunCodes: true,
+}
+
+
+
+function initPathMap(graph) {
+	// For every vertex, create a set of size 1 ending in that vertex
+	// AKA the set of exclusively that vertex lol
+	sets = []
+
+	for (let i = 0; i < graph.length; i++) {
+		sets.push([[i]]); // sets[i] = [[i]];
+	}
+
+	return sets
+}
+
+// Hmmmm ok let's try to code a hamiltonian path thing
+// Gonna try to make the hackiest solution of all time
+function buildPath() {
+	graph = buildGraph(); // Adjacency matrix
+	// For every vertex v, pathMap[v] contains a set(list) of all the paths that end in v
+	pathMap = initPathMap(graph);
+
+	// Now we do the alg thing ye?
+	// Build until the paths are of full length?
+	for (let i = 0; i < graph.length - 1; i++) { // might be off by one here lol, since we already start with size 1
+		newPathMap = new Array(graph.length).fill([]);
+
+		// For every vertex
+		for (let v = 0; v < graph.length; v++) {
+
+			// Iterate over EVERY EXISTING SUBSET OF PATHS and check for connectivity
+			pathMap.forEach((paths, w) => {
+				// Don't check our own paths, though this would get excluded below anyway
+				if (w !== v) {
+					// For every path ending in vertex w
+					paths.forEach(path => {
+						// If we connect to w and are not already in the path
+						if (graph[v][w] && !path.includes(v)) {
+							// This is a new path for us :eyes:
+							newPath = [v, ...path];
+							// Add to the map under our name :)
+							newPathMap[v].push(newPath);
+						}
+					});
+				}
+			})
+		}
+
+		// Now we should have built a whole new generation of path subsets
+		// let's re-assign and continue with our lives!
+		pathMap = newPathMap;
+	}
+
+	// Now we can return one of our paths?
+	// idk let's just print this is LOL
+	console.log(pathMap[0][0]);
+}
+
+
+
+
+
+function randomize(seed, schema) { // Entry point for randomize click
 	if (!schema) schema = 2;
 
 	var load = true;
@@ -80,14 +103,14 @@ function randomize(seed, schema) {
 	}
 	getRandom = new Math.seedrandom(seed);
 
-	var stage = getStage();
-	var numTargets = getNumTargets(stage);
-	var spawn = isSpawn();
-	var mismatch = isMismatch();
-	var reduceImpossible = isReduceImpossible();
-	var enableSpeedrunCodes = isSpeedrunCodes();
-	var enableWinCondition = isWinCondition();
-	var winCondition = getWinCondition();
+	var stage = ALL; // var stage = getStage();
+	var numTargets = 10; // var numTargets = getNumTargets(stage);
+	var spawn = true; // var spawn = isSpawn();
+	var mismatch = true; // var mismatch = isMismatch();
+	var reduceImpossible = true; // var reduceImpossible = isReduceImpossible();
+	var enableSpeedrunCodes = true; // var enableSpeedrunCodes = isSpeedrunCodes();
+	var enableWinCondition = false; // var enableWinCondition = isWinCondition();
+	var winCondition = 10; // var winCondition = getWinCondition();
 
 	if (isNaN(numTargets) || numTargets < 1 || numTargets > 255) {
 		resultBox.value = "Number of targets must be a number between 1 and 255."
@@ -98,8 +121,6 @@ function randomize(seed, schema) {
 		resultBox.value = "Win condition must be a number between 1 and the number of targets."
 		return;
 	}
-
-	showHideGeckoNote();
 
 	var code = "";
 	if (stage == ALL) {
@@ -315,18 +336,6 @@ function getAllStagesCode(spawn, schema, mismatchMap) {
 		stages.push(i);
 	}
 	return getModularCode(stages, spawn, numTargets, schema, mismatchMap);
-}
-
-function showHideGeckoNote() {
-	geckoNote.style.display = "none";
-
-	var stage = getStage();
-	if (stage == ALL) {
-		var numTargets = getNumTargets();
-		if (numTargets > 15) {
-			geckoNote.style.display = "block";
-		}
-	}
 }
 
 function getMismatchCode() {
