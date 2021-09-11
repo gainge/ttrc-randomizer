@@ -33,6 +33,67 @@ const settings = {
 
 
 
+function buildGraph() {
+	const TTRC_EXCLUSIONS = [
+		[45, 28, 44], // doc
+		[30, 33, 40], // mario
+		[49, 32, 46], // luigi
+		[42, 35, 32], // bowser
+		[48, 37, 41], // peach
+		[31, 48, 28], // yoshi
+		[47, 38, 26], // dk
+		[46, 31, 42], // falcon
+		[27, 30, 34], // ganon
+		[41, 44, 29], // falco
+		[34, 49, 31], // fox
+		[29, 45, 25], // ness
+		[33, 41, 43], // ICs
+		[43, 42, 36], // kirby
+		[35, 43, 37], // samus
+		[37, 29, 27], // sheik
+		[28, 26, 30], // link
+		[40, 25, 35], // yl
+		[32, 36, 49], // pichu
+		[39, 47, 45], // pika
+		[38, 34, 48], // puff
+		[36, 39, 38], // m2
+		[26, 27, 39], // gnw
+		[44, 40, 33], // marth
+		[25, 46, 47], // roy
+	]
+	const numChars = TTRC_EXCLUSIONS.length
+
+	const graph = Array.from(Array(numChars * 2), _ => Array(numChars * 2).fill(1));
+
+	// Remove TTRC Exclusions
+	TTRC_EXCLUSIONS.forEach((stages, char) => {
+		stages.forEach(stageIndex => {
+			graph[char][stageIndex] = 0; // Remove this link
+		})
+	});
+
+	// Remove character to character connections
+	for (let i = 0; i < numChars; i++) {
+		for (let j = 0; j < numChars; j++) {
+			graph[i][j] = 0;
+		}
+	}
+
+	// Remove stage to stage connections
+	for (let i = 0; i < numChars; i++) {
+		for (let j = 0; j < numChars; j++) {
+			graph[i + numChars][j + numChars] = 0;
+		}
+	}
+
+	// Making that adjacency matrix, dawwwwg
+	// Easiest way is to just have a matrix of the checkboxes lol
+	// which we'll build programmatically
+	// for now let's just hardcode a graph and see how it does :miku:
+
+	return graph;
+}
+
 function initPathMap(graph) {
 	// For every vertex, create a set of size 1 ending in that vertex
 	// AKA the set of exclusively that vertex lol
@@ -48,17 +109,21 @@ function initPathMap(graph) {
 // Hmmmm ok let's try to code a hamiltonian path thing
 // Gonna try to make the hackiest solution of all time
 function buildPath() {
-	graph = buildGraph(); // Adjacency matrix
+	const graph = buildGraph(); // Adjacency matrix
+
 	// For every vertex v, pathMap[v] contains a set(list) of all the paths that end in v
-	pathMap = initPathMap(graph);
+	let pathMap = initPathMap(graph);
 
 	// Now we do the alg thing ye?
 	// Build until the paths are of full length?
 	for (let i = 0; i < graph.length - 1; i++) { // might be off by one here lol, since we already start with size 1
-		newPathMap = new Array(graph.length).fill([]);
+		console.log("pass " + i);
+		let newPathMap = [];
 
 		// For every vertex
 		for (let v = 0; v < graph.length; v++) {
+			console.log("vertex " + v);
+			newPathMap.push([]);
 
 			// Iterate over EVERY EXISTING SUBSET OF PATHS and check for connectivity
 			pathMap.forEach((paths, w) => {
@@ -68,24 +133,28 @@ function buildPath() {
 					paths.forEach(path => {
 						// If we connect to w and are not already in the path
 						if (graph[v][w] && !path.includes(v)) {
+							// console.log("connecting path " + path +" through vertex " + w);
 							// This is a new path for us :eyes:
-							newPath = [v, ...path];
+							let newPath = [v, ...path];
+
+							// console.log(newPath);
 							// Add to the map under our name :)
 							newPathMap[v].push(newPath);
 						}
 					});
 				}
-			})
+			});
 		}
 
 		// Now we should have built a whole new generation of path subsets
 		// let's re-assign and continue with our lives!
 		pathMap = newPathMap;
+		console.log(pathMap);
 	}
 
 	// Now we can return one of our paths?
 	// idk let's just print this is LOL
-	console.log(pathMap[0][0]);
+	console.log(pathMap);
 }
 
 
