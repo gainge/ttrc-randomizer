@@ -27,10 +27,46 @@
                 ul {
                     margin-top: 0px;
                 }
+
+                #selector-container {
+                    display: grid;
+                    grid-template-columns: repeat(26, auto);
+                    grid-template-rows: repeat(26, auto);
+                    justify-content: center;
+                    align-self: flex-start;
+
+                    margin-right: 2rem;
+                }
+
+                #selector-wrapper {
+                    display: flex;
+                    align-content: flex-start;
+
+                    margin-bottom: 2rem;
+                }
+
+                .grid-select {
+                    margin: 0;
+                }
+
+                img {
+                    image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+                    image-rendering: -moz-crisp-edges;          /* Firefox                        */
+                    image-rendering: -o-crisp-edges;            /* Opera                          */
+                    image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+                    image-rendering: pixelated; /* Chrome */
+                    image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+                    -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+                }
+
+
             </style>
         </head>
         <body>
             <h1 style="margin-bottom: 12px">Unique TTRC Randomizer</h1>
+            <div id="selector-wrapper">
+                <div id="selector-container"></div>
+
             <table style="margin-bottom: 5px">
                 <tbody><tr>
                     <td style="min-width: 170px">
@@ -116,6 +152,8 @@
                     </td>
                 </tr>
             </tbody></table>
+
+            </div>
             <div id="gecko-limitation-note" style="color: red; display: none; margin-top: 10px;">
                 <b>WARNING: </b>Because Gecko codes are limited to a certain length, depending on how many other codes are <br>enabled, generating an all-stages code with too many targets may result in the code not working at all.
             </div>

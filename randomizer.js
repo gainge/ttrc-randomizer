@@ -70,32 +70,33 @@ var codeDetailsDiv = document.querySelector('#code-details');
 var getRandom;
 
 const TTRC_EXCLUSIONS = [
-	[45, 28, 44], // doc
-	[30, 33, 40], // mario
-	[49, 32, 46], // luigi
-	[42, 35, 32], // bowser
-	[48, 37, 41], // peach
-	[31, 48, 28], // yoshi
-	[47, 38, 26], // dk
-	[46, 31, 42], // falcon
-	[27, 30, 34], // ganon
-	[41, 44, 29], // falco
-	[34, 49, 31], // fox
-	[29, 45, 25], // ness
-	[33, 41, 43], // ICs
-	[43, 42, 36], // kirby
-	[35, 43, 37], // samus
-	[37, 29, 27], // sheik
-	[28, 26, 30], // link
-	[40, 25, 35], // yl
-	[32, 36, 49], // pichu
-	[39, 47, 45], // pika
-	[38, 34, 48], // puff
-	[36, 39, 38], // m2
-	[26, 27, 39], // gnw
-	[44, 40, 33], // marth
-	[25, 46, 47], // roy
+	[20,  3, 19],
+	[ 5,  8, 15],
+	[24,  7, 21],
+	[17, 10,  7],
+	[23, 12, 16],
+	[ 6, 23,  3],
+	[22, 13,  1],
+	[21,  6, 17],
+	[ 2,  5,  9],
+	[16, 19,  4],
+	[ 9, 24,  6],
+	[ 4, 20,  0],
+	[ 8, 16, 18],
+	[18, 17, 11],
+	[10, 18, 12],
+	[12,  4,  2],
+	[ 3,  1,  5],
+	[15,  0, 10],
+	[ 7, 11, 24],
+	[14, 22, 20],
+	[13,  9, 23],
+	[11, 14, 13],
+	[ 1,  2, 14],
+	[19, 15,  8],
+	[ 0, 21, 22]
 ]
+
 const CHAR_STRINGS = [
 	"Doc",
 	"Mario",
@@ -124,13 +125,120 @@ const CHAR_STRINGS = [
 	"Roy",
 ]
 
+const STOCK_ICONS = [
+	"res/DrMarioBlack.png",
+	"res/MarioOriginal.png",
+	"res/LuigiOriginal.png",
+	"res/BowserOriginal.png",
+	"res/PeachOriginal.png",
+	"res/YoshiOriginal.png",
+	"res/DonkeyKongOriginal.png",
+	"res/CaptainFalconOriginal.png",
+	"res/GanondorfOriginal.png",
+	"res/FalcoOriginal.png",
+	"res/FoxOriginal.png",
+	"res/NessOriginal.png",
+	"res/IceClimbersOriginal.png",
+	"res/KirbyOriginal.png",
+	"res/SamusOriginal.png",
+	"res/SheikOriginal.png",
+	"res/LinkGreen.png",
+	"res/YoungLinkGreen.png",
+	"res/PichuOriginal.png",
+	"res/PikachuOriginal.png",
+	"res/JigglyPuffOriginal.png",
+	"res/MewtwoOriginal.png",
+	"res/Game & Watch Original.png",
+	"res/MarthOriginal.png",
+	"res/RoyOriginal.png",
+]
+
+let customExclusions = [];
+
+
+function toggleCheckbox(checkbox) {
+	// checkbox.disabled = false;
+	checkbox.checked = !checkbox.checked;
+	// checkbox.disabled = true;
+}
+
+function toggleVanillaExclusions() {
+	for (let i = 0; i < customExclusions.length; i++) {
+		for (let j = 0 ; j < customExclusions.length; j++) {
+			if (i === j) {
+				toggleCheckbox(customExclusions[i][j]);
+			}
+		}
+	}
+}
+
+function toggleTTRCExclusions(ttrcIndex = 0) {
+	TTRC_EXCLUSIONS.forEach((stages, char) => {
+		toggleCheckbox(customExclusions[char][stages[ttrcIndex]]);
+	});
+}
+
+
+
+
+function buildExclusionSelector() {
+	const container = document.getElementById('selector-container');
+	const numChars = CHAR_STRINGS.length;
+
+	for (let i = -1; i < numChars; i++) {
+		if (i >= 0) {
+			customExclusions.push([]);
+		}
+		for (let j = -1; j < numChars; j++) {
+			if (i === -1) {
+				if (j === -1) {
+					container.appendChild(document.createElement('div'));
+				} else {
+					// Add a top level icon (stage)
+					let icon = document.createElement('img');
+					icon.setAttribute('src', STOCK_ICONS[j]);
+					container.appendChild(icon);
+				}
+			} else {
+				if (j === -1) {
+					// Add a side icon (character)
+					let icon = document.createElement('img');
+					icon.setAttribute('src', STOCK_ICONS[i]);
+					container.appendChild(icon);
+				} else {
+					let selector = document.createElement('input')
+					selector.setAttribute('type', 'checkbox');
+					selector.classList.add('grid-select');
+
+					// Set enabled and checked based on TTRC exclusions
+					if (TTRC_EXCLUSIONS[i].includes(j) || i === j) {
+						selector.checked = true;
+						// selector.disabled = true;
+					}
+					container.appendChild(selector);
+
+					// Store it in our cool array
+					customExclusions[i].push(selector);
+				}
+			}
+		}
+	}
+
+}
+
+// Idk just run it right away
+buildExclusionSelector();
+
 function isUniqueMismatch(mismatchMap, seed) {
 	for (let i = 0; i < mismatchMap.length; i++) {
 		// Check against TTRC Exclusions (with offset :P)
 		const char = mismatchMap[i];
 
-		if (TTRC_EXCLUSIONS[char].includes(i + 25)) {
-			console.log("[" + seed + "] Failed! -> " + CHAR_STRINGS[char] + " on " + CHAR_STRINGS[i] + " (TTRC" + (TTRC_EXCLUSIONS[char].indexOf(i + 25) + 1) + ")");
+		if (TTRC_EXCLUSIONS[char].includes(i) || customExclusions[char][i].getAttribute('checked') === "true") {
+			const failString = "[" + seed + "] Failed! -> " + CHAR_STRINGS[char] + " on " + CHAR_STRINGS[i];
+			const cause = TTRC_EXCLUSIONS[char].includes(i) ? " (TTRC" + (TTRC_EXCLUSIONS[char].indexOf(i) + 1) + ")" : " (Custom Exclusion)";
+			console.log(failString + cause);
+
 			return false;
 		}
 	}
@@ -220,6 +328,11 @@ function randomize(seed, schema) {
 		resultBox.value = code;
 		idBox.value = encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
 			reduceImpossible, enableSpeedrunCodes, enableWinCondition, winCondition);
+		
+
+		if (!mismatchObject) {
+			break;
+		}
 		
 		if (mismatchObject && isUniqueMismatch(mismatchObject.map, idBox.value)) {
 			break;
