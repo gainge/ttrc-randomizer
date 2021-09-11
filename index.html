@@ -1,6 +1,5 @@
 <html><head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-            <link rel="shortcut icon" type="image/x-icon" href="https://bttrandomizer.com/favicon.ico">
             <title>Break the Targets Randomizer</title>
             <style>
                 body {
@@ -45,6 +44,10 @@
                     margin-bottom: 2rem;
                 }
 
+                #grid-control>input {
+                    margin-left: 2rem;
+                }
+
                 .grid-select {
                     margin: 0;
                 }
@@ -64,6 +67,19 @@
         </head>
         <body>
             <h1 style="margin-bottom: 12px">Unique TTRC Randomizer</h1>
+
+            <div id="grid-control">
+                <input type="checkbox" name="vanilla" id="vanilla" checked="true" onchange="toggleVanillaExclusions()">
+                <label for="vanilla">Vanilla</label>
+                <input type="checkbox" name="ttrc1" id="ttrc1" checked="true" onchange="toggleTTRCExclusions(0)">
+                <label for="ttrc1">TTRC 1</label>
+                <input type="checkbox" name="ttrc2" id="ttrc2" checked="true" onchange="toggleTTRCExclusions(1)">
+                <label for="ttrc2">TTRC 2</label>
+                <input type="checkbox" name="ttrc3" id="ttrc3" checked="true" onchange="toggleTTRCExclusions(2)">
+                <label for="ttrc3">TTRC 3</label>
+                
+                <button onclick="resetGridSettings()">Reset</button>
+            </div>
             <div id="selector-wrapper">
                 <div id="selector-container"></div>
 

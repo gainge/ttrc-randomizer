@@ -179,6 +179,26 @@ function toggleTTRCExclusions(ttrcIndex = 0) {
 }
 
 
+function setExclusions() {
+	const numChars = CHAR_STRINGS.length;
+	for (let i = 0; i < numChars; i++) {
+		for (let j = 0; j < numChars; j++) {
+			customExclusions[i][j].checked = (TTRC_EXCLUSIONS[i].includes(j) || i === j);
+		}
+	}
+}
+
+
+function resetGridSettings() {
+	setExclusions();
+
+	document.getElementById('vanilla').checked = true;
+	document.getElementById('ttrc1').checked = true;
+	document.getElementById('ttrc2').checked = true;
+	document.getElementById('ttrc3').checked = true;
+}
+
+
 
 
 function buildExclusionSelector() {
