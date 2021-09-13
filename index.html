@@ -37,11 +37,34 @@
                     margin-right: 2rem;
                 }
 
-                #selector-wrapper {
+                #randomizer-wrapper {
                     display: flex;
                     align-content: flex-start;
 
                     margin-bottom: 2rem;
+                    /* margin-top: 1rem; */
+                }
+
+                #selector-wrapper {
+                    display: inline-block;
+                }
+
+                #selector-wrapper p {
+                    margin: 0.5rem;
+                }
+
+                #grid-display {
+                    display: flex;
+                    flex-direction: row;
+                }
+
+                #stage-label {
+                    text-align: center;
+                }
+
+                #char-label {
+                    writing-mode: vertical-rl;
+                    align-self: center;
                 }
 
                 #grid-control>input {
@@ -84,8 +107,14 @@
                 
                 <button onclick="resetGridSettings()">Reset</button>
             </div>
-            <div id="selector-wrapper">
-                <div id="selector-container"></div>
+            <div id="randomizer-wrapper">
+                <div id="selector-wrapper">
+                    <div><p id="stage-label">stage</p></div>
+                    <div id="grid-display">
+                        <p id="char-label">character</p>
+                        <div id="selector-container"></div>
+                    </div>
+                </div>
 
             <table style="margin-bottom: 5px">
                 <tbody><tr>
