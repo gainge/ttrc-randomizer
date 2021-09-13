@@ -27,6 +27,17 @@
                     margin-top: 0px;
                 }
 
+                #page-header {
+                    margin: 0;
+                    font-family: Arial, Helvetica, sans-serif;
+                    text-align: center;
+                }
+
+                #exclusion-header {
+                    margin: 1rem 0;
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+
                 #selector-container {
                     display: grid;
                     grid-template-columns: repeat(26, auto);
@@ -42,7 +53,6 @@
                     align-content: flex-start;
 
                     margin-bottom: 2rem;
-                    /* margin-top: 1rem; */
                 }
 
                 #selector-wrapper {
@@ -58,6 +68,11 @@
                     flex-direction: row;
                 }
 
+                p[id$="-label"] {
+                    font-style: italic;
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+
                 #stage-label {
                     text-align: center;
                 }
@@ -67,8 +82,21 @@
                     align-self: center;
                 }
 
+                #grid-control {
+                    padding-left: 2rem;
+                }
+
                 #grid-control>input {
-                    margin-left: 2rem;
+                    margin-left: 1rem;
+                }
+
+                #grid-control>input:first-of-type {
+                    margin-left: 0;
+                }
+
+                #grid-control>label {
+                    margin-right: 1rem;
+                    font-family: Arial, Helvetica, sans-serif;
                 }
 
                 .grid-select {
@@ -93,9 +121,10 @@
             </style>
         </head>
         <body>
-            <h1 style="margin-bottom: 12px">Unique TTRC Randomizer</h1>
+            <h1 id="page-header">Unique TTRC Randomizer</h1>
 
             <div id="grid-control">
+                <h3 id="exclusion-header">Exclusions</h3>
                 <input type="checkbox" name="vanilla" id="vanilla" checked="true" onchange="toggleVanillaExclusions()">
                 <label for="vanilla">Vanilla</label>
                 <input type="checkbox" name="ttrc1" id="ttrc1" checked="true" onchange="toggleTTRCExclusions(0)">
