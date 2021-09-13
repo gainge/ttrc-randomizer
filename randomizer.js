@@ -248,6 +248,13 @@ function buildExclusionSelector() {
 
 // Idk just run it right away
 buildExclusionSelector();
+// Show options by default
+showOptions();
+// Enable default options
+spawnBox.checked = true;
+mismatchCheckbox.checked = true;
+showHideMismatch();
+speedrunCodesCheckbox.checked = true;
 
 function isUniqueMismatch(mismatchMap, seed) {
 	for (let i = 0; i < mismatchMap.length; i++) {
