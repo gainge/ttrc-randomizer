@@ -229,6 +229,7 @@ function buildExclusionSelector() {
 					let selector = document.createElement('input')
 					selector.setAttribute('type', 'checkbox');
 					selector.classList.add('grid-select');
+					selector.setAttribute('title', CHAR_STRINGS[i] + " on " + CHAR_STRINGS[j]);
 
 					// Set enabled and checked based on TTRC exclusions
 					if (TTRC_EXCLUSIONS[i].includes(j) || i === j) {
