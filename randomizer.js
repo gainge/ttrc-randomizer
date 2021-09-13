@@ -247,6 +247,17 @@ function buildExclusionSelector() {
 
 }
 
+
+function logMapping(mismatchMap) {
+	let logString = "";
+
+	for (let i = 0; i < mismatchMap.length; i++) {
+		logString += CHAR_STRINGS[mismatchMap[i]] + " on " + CHAR_STRINGS[i] + "\n";
+	}
+
+	console.log(logString);
+}
+
 // Idk just run it right away
 buildExclusionSelector();
 // Show options by default
@@ -273,6 +284,7 @@ function isUniqueMismatch(mismatchMap, seed) {
 
 	console.log("Success! " + seed);
 	console.log(mismatchMap);
+	logMapping(mismatchMap);
 	return true;
 }
 
