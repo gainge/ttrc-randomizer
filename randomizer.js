@@ -156,25 +156,29 @@ const STOCK_ICONS = [
 let customExclusions = [];
 
 
-function toggleCheckbox(checkbox) {
-	// checkbox.disabled = false;
-	checkbox.checked = !checkbox.checked;
-	// checkbox.disabled = true;
+function handleClick(checkbox, index = -1) {
+	console.log('Clicked!');
+	console.log(`This: ${checkbox.checked}`);
+	console.log(`index: ${index}`);
 }
 
-function toggleVanillaExclusions() {
+function setCheckBox(checkbox, value) {
+	checkbox.checked = value;
+}
+
+function toggleVanillaExclusions(checkbox) {
 	for (let i = 0; i < customExclusions.length; i++) {
 		for (let j = 0 ; j < customExclusions.length; j++) {
 			if (i === j) {
-				toggleCheckbox(customExclusions[i][j]);
+				setCheckBox(customExclusions[i][j], checkbox.checked);
 			}
 		}
 	}
 }
 
-function toggleTTRCExclusions(ttrcIndex = 0) {
+function toggleTTRCExclusions(checkbox, ttrcIndex = 0) {
 	TTRC_EXCLUSIONS.forEach((stages, char) => {
-		toggleCheckbox(customExclusions[char][stages[ttrcIndex]]);
+		setCheckBox(customExclusions[char][stages[ttrcIndex]], checkbox.checked);
 	});
 }
 
@@ -196,6 +200,7 @@ function resetGridSettings() {
 	document.getElementById('ttrc1').checked = true;
 	document.getElementById('ttrc2').checked = true;
 	document.getElementById('ttrc3').checked = true;
+	document.getElementById('ttrc4').checked = true;
 }
 
 

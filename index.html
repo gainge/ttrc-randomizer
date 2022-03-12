@@ -125,16 +125,17 @@
             <h1 id="page-header">Unique TTRC Randomizer</h1>
 
             <div id="grid-control">
+                <!-- onchange="toggleVanillaExclusions()" -->
                 <h3 id="exclusion-header">Exclusions:</h3>
-                <input type="checkbox" name="vanilla" id="vanilla" checked="true" onchange="toggleVanillaExclusions()">
+                <input type="checkbox" name="vanilla" id="vanilla" checked="true" onchange="toggleVanillaExclusions(this)">
                 <label for="vanilla">Vanilla</label>
-                <input type="checkbox" name="ttrc1" id="ttrc1" checked="true" onchange="toggleTTRCExclusions(0)">
+                <input type="checkbox" name="ttrc1" id="ttrc1" checked="true" onchange="toggleTTRCExclusions(this, 0)">
                 <label for="ttrc1">TTRC 1</label>
-                <input type="checkbox" name="ttrc2" id="ttrc2" checked="true" onchange="toggleTTRCExclusions(1)">
+                <input type="checkbox" name="ttrc2" id="ttrc2" checked="true" onchange="toggleTTRCExclusions(this, 1)">
                 <label for="ttrc2">TTRC 2</label>
-                <input type="checkbox" name="ttrc3" id="ttrc3" checked="true" onchange="toggleTTRCExclusions(2)">
+                <input type="checkbox" name="ttrc3" id="ttrc3" checked="true" onchange="toggleTTRCExclusions(this, 2)">
                 <label for="ttrc3">TTRC 3</label>
-                <input type="checkbox" name="ttrc4" id="ttrc4" checked="true" onchange="toggleTTRCExclusions(3)">
+                <input type="checkbox" name="ttrc4" id="ttrc4" checked="true" onchange="toggleTTRCExclusions(this, 3)">
                 <label for="ttrc4">TTRC 4</label>
                 
                 <button onclick="resetGridSettings()">Reset</button>
