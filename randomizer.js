@@ -153,7 +153,11 @@ const STOCK_ICONS = [
 	"res/RoyOriginal.png",
 ]
 
+const HOVER_CLASS = 'hoverState';
+
 let customExclusions = [];
+let rowIcons = [];
+let columnIcons = [];
 
 
 function handleClick(checkbox, index = -1) {
@@ -192,6 +196,17 @@ function setExclusions() {
 	}
 }
 
+function setIconHoverState(hoverEnabled, col, row) {
+	// Set the highlight class on the icons in question
+	if (hoverEnabled) {
+		rowIcons[row].classList.add(HOVER_CLASS);
+		columnIcons[col].classList.add(HOVER_CLASS);
+	} else {
+		rowIcons[row].classList.remove(HOVER_CLASS);
+		columnIcons[col].classList.remove(HOVER_CLASS);
+	}
+}
+
 
 function resetGridSettings() {
 	setExclusions();
@@ -223,6 +238,7 @@ function buildExclusionSelector() {
 					let icon = document.createElement('img');
 					icon.setAttribute('src', STOCK_ICONS[j]);
 					container.appendChild(icon);
+					rowIcons.push(icon);
 				}
 			} else {
 				if (j === -1) {
@@ -230,6 +246,7 @@ function buildExclusionSelector() {
 					let icon = document.createElement('img');
 					icon.setAttribute('src', STOCK_ICONS[i]);
 					container.appendChild(icon);
+					columnIcons.push(icon);
 				} else {
 					let selector = document.createElement('input')
 					selector.setAttribute('type', 'checkbox');
@@ -245,6 +262,10 @@ function buildExclusionSelector() {
 
 					// Store it in our cool array
 					customExclusions[i].push(selector);
+
+					// Add super cool dynamic hover to selection items
+					selector.addEventListener('mouseenter', _ => setIconHoverState(true, i, j));
+					selector.addEventListener('mouseleave', _ => setIconHoverState(false, i, j));
 				}
 			}
 		}
