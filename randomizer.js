@@ -299,9 +299,13 @@ function isUniqueMismatch(mismatchMap, seed) {
 		// Check against TTRC Exclusions (with offset :P)
 		const char = mismatchMap[i];
 
-		if (TTRC_EXCLUSIONS[char].includes(i) || customExclusions[char][i].getAttribute('checked') === "true") {
+		if (customExclusions[char][i].checked) {
 			const failString = "[" + seed + "] Failed! -> " + CHAR_STRINGS[char] + " on " + CHAR_STRINGS[i];
-			const cause = TTRC_EXCLUSIONS[char].includes(i) ? " (TTRC" + (TTRC_EXCLUSIONS[char].indexOf(i) + 1) + ")" : " (Custom Exclusion)";
+			const cause = TTRC_EXCLUSIONS[char].includes(i) ? 
+				" (TTRC" + (TTRC_EXCLUSIONS[char].indexOf(i) + 1) + ")" :
+				(char === i) ?
+				" (Vanilla)" :
+				" (Custom Exclusion)";
 			console.log(failString + cause);
 
 			return false;
