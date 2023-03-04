@@ -70,31 +70,31 @@ var codeDetailsDiv = document.querySelector('#code-details');
 var getRandom;
 
 const TTRC_EXCLUSIONS = [
-	[20,  3, 19, 10, 7],		// Doc | 0
-	[ 5,  8, 15, 23, 3],		// Mario | 1
-	[24,  7, 21, 4, 8],			// Luigi | 2
-	[17, 10,  7, 7, 16],		// Bowser | 3
-	[23, 12, 16, 19, 21],		// Peach | 4
-	[ 6, 23,  3, 21, 1],		// Yoshi | 5
-	[22, 13,  1, 12, 19],		// DK | 6
-	[21,  6, 17, 11, 12],		// Falcon | 7
-	[ 2,  5,  9, 0, 4],			// Ganon | 8
-	[16, 19,  4, 13, 5],		// Falco | 9
-	[ 9, 24,  6, 2, 18],		// Fox | 10
-	[ 4, 20,  0, 6, 17],		// Ness | 11
-	[ 8, 16, 18, 5, 15],		// ICs | 12
-	[18, 17, 11, 16, 20],		// Kirby | 13
-	[10, 18, 12, 22, 2],		// Samus | 14
-	[12,  4,  2, 9, 14],		// Sheik | 15
-	[ 3,  1,  5, 20, 13],		// Link | 16
-	[15,  0, 10, 3, 11],		// Young Link | 17
-	[ 7, 11, 24, 1, 6],			// Pichu | 18
-	[14, 22, 20, 8, 9],			// Pikachu | 19
-	[13,  9, 23, 24, 22],		// Jigglypuff | 20
-	[11, 14, 13, 17, 0],		// Mewtwo | 21
-	[ 1,  2, 14, 15, 23],		// GnW | 22
-	[19, 15,  8, 18, 24],		// Marth | 23
-	[ 0, 21, 22, 14, 10]		// Roy | 24
+	[20,  3, 19, 10,  7,  2],		// Doc | 0
+	[ 5,  8, 15, 23,  3, 12],		// Mario | 1
+	[24,  7, 21,  4,  8, 18],		// Luigi | 2
+	[17, 10,  7,  7, 16, 13],		// Bowser | 3
+	[23, 12, 16, 19, 21, 11],		// Peach | 4
+	[ 6, 23,  3, 21,  1, 22],		// Yoshi | 5
+	[22, 13,  1, 12, 19,  0],		// DK | 6
+	[21,  6, 17, 11, 12,  3],		// Falcon | 7
+	[ 2,  5,  9,  0,  4, 24],		// Ganon | 8
+	[16, 19,  4, 13,  5, 17],		// Falco | 9
+	[ 9, 24,  6,  2, 18, 19],		// Fox | 10
+	[ 4, 20,  0,  6, 17,  1],		// Ness | 11
+	[ 8, 16, 18,  5, 15,  7],		// ICs | 12
+	[18, 17, 11, 16, 20,  9],		// Kirby | 13
+	[10, 18, 12, 22,  2, 15],		// Samus | 14
+	[12,  4,  2,  9, 14,  5],		// Sheik | 15
+	[ 3,  1,  5, 20, 13, 21],		// Link | 16
+	[15,  0, 10,  3, 11, 14],		// Young Link | 17
+	[ 7, 11, 24,  1,  6, 16],		// Pichu | 18
+	[14, 22, 20,  8,  9, 10],		// Pikachu | 19
+	[13,  9, 23, 24, 22,  4],		// Jigglypuff | 20
+	[11, 14, 13, 17,  0, 23],		// Mewtwo | 21
+	[ 1,  2, 14, 15, 23,  8],		// GnW | 22
+	[19, 15,  8, 18, 24, 20],		// Marth | 23
+	[ 0, 21, 22, 14, 10,  6]		// Roy | 24
 ]
 
 const CHAR_STRINGS = [
@@ -210,6 +210,7 @@ function resetGridSettings() {
 	document.getElementById('ttrc3').checked = true;
 	document.getElementById('ttrc4').checked = true;
 	document.getElementById('ttrc5').checked = true;
+	document.getElementById('ttrc6').checked = true;
 }
 
 
