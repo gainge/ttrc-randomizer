@@ -317,9 +317,19 @@ function isUniqueMismatch(mismatchMap, seed) {
 }
 
 function randomize(seed, schema) {
-	if (!schema) schema = CURRENT_SCHEMA;
+	
+	document.getElementById('attempt-count').innerHTML = '';
+	document.getElementById('randomize').disabled = true;
+	_randomize(seed, schema, 1);
+}
 
-	while (true) {
+function _randomize(seed, schema, attempts) {
+	setTimeout(() => {
+		if (!schema) schema = CURRENT_SCHEMA;
+
+		attempts++;
+		document.getElementById('attempt-count').innerHTML = attempts;
+
 		if (!schema) schema = 2;
 
 		var load = true;
@@ -405,17 +415,17 @@ function randomize(seed, schema) {
 		
 
 		if (!mismatchObject) {
-			break;
+			document.getElementById('randomize').disabled = false;
+			return
 		}
 		
 		if (mismatchObject && isUniqueMismatch(mismatchObject.map, idBox.value)) {
-			break;
+			document.getElementById('randomize').disabled = false;
+			return;
 		} else {
-			seed = undefined;
+			_randomize(undefined, schema, attempts + 1);
 		}
-
-	}
-
+	}, 0);
 }
 
 function getCode(stage, spawn, weighted, enableMoving, schema) {

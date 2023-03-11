@@ -61,6 +61,15 @@
                     margin-bottom: 2rem;
                 }
 
+                #randomize-button-container {
+                    display: flex;
+                    align-items: center;
+                }
+
+                #randomize {
+                    margin-right: 12px;
+                }
+
                 #selector-wrapper {
                     display: inline-block;
                 }
@@ -203,7 +212,10 @@
                                 <option value="24">Roy</option>
                                 <option value="25">Sheik (Seak)</option>
                             </select>
-                            <p><button id="randomize" onclick="randomize()" class="button">RANDOMIZE</button></p>
+                            <div id="randomize-button-container">
+                                <p><button id="randomize" onclick="randomize()" class="button">RANDOMIZE</button></p>
+                                <p>Attempts: <span id="attempt-count"></span></p>
+                            </div>
                             <div id="show-options">
                                 <button onclick="showOptions()">Advanced Options</button>
                             </div>
