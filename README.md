@@ -2,7 +2,7 @@
 https://gainge.github.io/ttrc-randomizer/
 
 * Select exclusions > get randomization
-* Currently has pairings for TTRCs 1-4
+* Currently has pairings for TTRCs 1-6
 <img width="1070" alt="Screen Shot 2022-03-11 at 10 47 42 PM" src="https://user-images.githubusercontent.com/28658489/158005728-66d671d9-930f-4e53-a471-86ff59cb69f8.png">
 
 **Note**:
