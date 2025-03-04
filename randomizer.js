@@ -269,19 +269,15 @@ function isUniqueMismatch(mismatchMap, seed) {
 
 document.getElementById('randomize').addEventListener('click', randomize)
 
-function randomize(seed, schema) {
+function randomize(seed) {
 	
 	document.getElementById('attempt-count').innerHTML = '';
 	document.getElementById('randomize').disabled = true;
-	_randomize(seed, schema, 1);
+	_randomize(seed, 1);
 }
 
-function _randomize(seed, schema, attempts) {
+function _randomize(seed, attempts) {
 	setTimeout(() => {
-		if (!schema) schema = CURRENT_SCHEMA;
-
-		if (!schema) schema = 2;
-
 		if (!seed) {
 			getRandom = new Math.seedrandom();
 			seed = Math.floor(getRandom() * Number.MAX_SAFE_INTEGER);
@@ -300,24 +296,16 @@ function _randomize(seed, schema, attempts) {
 		let mismatchObject = undefined;
 
 		let code = "";
-		if (schema == 1) {
-			code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
-			if (mismatch) {
-				mismatchObject = getMismatchCode();
-				code += '\n' + mismatchObject['code'];
-			}
-		} else {
-			if (mismatch) {
-				mismatchObject = getMismatchCode();
-				if (reduceImpossible) {
-					code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema, mismatchObject['map']);
-				} else {
-					code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
-				}
-				code += '\n' + mismatchObject['code'];
+		if (mismatch) {
+			mismatchObject = getMismatchCode();
+			if (reduceImpossible) {
+				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, mismatchObject['map']);
 			} else {
-				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
+				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute);
 			}
+			code += '\n' + mismatchObject['code'];
+		} else {
+			code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute);
 		}
 
 		code += '\n' + defaultCodes;
@@ -327,7 +315,7 @@ function _randomize(seed, schema, attempts) {
 		}
 
 		resultBox.value = code;
-		idBox.value = encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
+		idBox.value = encodeRandomizerId(seed, stage, numTargets, spawn, mismatch,
 			reduceImpossible, enableSpeedrunCodes, weighted,
 			enableMoving, randomlyDistribute);
 		
@@ -341,19 +329,19 @@ function _randomize(seed, schema, attempts) {
 			document.getElementById('randomize').disabled = false;
 			return;
 		} else {
-			_randomize(undefined, schema, attempts + 1);
+			_randomize(undefined, attempts + 1);
 		}
 	}, 0);
 }
 
-function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, schema, mismatchMap) {
+function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, mismatchMap) {
 	// build injection code
 	let instructions =  [...modularInjectionStart];
 	const stageData = [];
 	let spawnPosition = -1;
 	const numTargetsMap = [];
 
-	if (schema >= 3 && randomlyDistribute) {
+	if (randomlyDistribute) {
 		for (let i = 0; i < 25; i++) {
 			numTargetsMap[i] = 0;
 		}
@@ -382,71 +370,65 @@ function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribut
 		const stage = stages[i];
 		const numTargetsToAdd = randomlyDistribute ? numTargetsMap[stage] : numTargets;
 		stageData.push(getStageHeader(DEFAULT_SCALE, spawn, COMPRESSION_HWORD, numTargetsToAdd, stage));
-		if (schema == 1) {
-			if (spawn) {
-				stageData.push(getSpawnHalfWords(stage));
+		if (mismatchMap && stage == YLINK) {
+			const character = mismatchMap[stage];
+			switch (character) {
+				case DRMARIO:
+				case LUIGI:
+				case BOWSER:
+				case PEACH: // DIFFICULT
+				case YOSHI:
+				case DK:
+				case GANONDORF:
+				case FALCO:
+				case FOX:
+				case NESS:
+				case ICECLIMBERS:
+				case KIRBY:
+				case LINK: // DIFFICULT
+				case PIKACHU:
+				case JIGGLYPUFF: // DIFFICULT
+				case MEWTWO: // DIFFICULT
+				case MRGAMEWATCH:
+				case MARTH:
+				case ROY:
+					if (spawn) {
+						// anything but pit spawn
+						const index = Math.floor(getRandom() * (spawns[stage].length - 1)) + 1;
+						stageData.push(coordsToHalfWords(spawns[stage][index][0], spawns[stage][index][1]));
+					} else {
+						// force spawn to be on lip of pit
+						stageData.splice(-1, 1);
+						stageData.push(getStageHeader(DEFAULT_SCALE, true, COMPRESSION_HWORD, numTargetsToAdd, stage));
+						stageData.push(coordsToHalfWords(spawns[YLINK][1][0], spawns[YLINK][1][1]));
+					}
+					break;
+				default:
+					// normal behavior
+					if (spawn) {
+						stageData.push(getSpawnHalfWords(stage));
+					}
+					break;
 			}
-		} else {
-			if (mismatchMap && stage == YLINK) {
+		} else if (spawn) {
+			spawnPosition = Math.floor(getRandom() * spawns[stage].length);
+			let spawnCoordinates = getSpawnHalfWords(stage, enableMoving, spawnPosition);
+			if (mismatchMap && stage == ICECLIMBERS) {
 				const character = mismatchMap[stage];
-				switch (character) {
-					case DRMARIO:
-					case LUIGI:
-					case BOWSER:
-					case PEACH: // DIFFICULT
-					case YOSHI:
-					case DK:
-					case GANONDORF:
-					case FALCO:
-					case FOX:
-					case NESS:
-					case ICECLIMBERS:
-					case KIRBY:
-					case LINK: // DIFFICULT
-					case PIKACHU:
-					case JIGGLYPUFF: // DIFFICULT
-					case MEWTWO: // DIFFICULT
-					case MRGAMEWATCH:
-					case MARTH:
-					case ROY:
-						if (spawn) {
-							// anything but pit spawn
-							const index = Math.floor(getRandom() * (spawns[stage].length - 1)) + 1;
-							stageData.push(coordsToHalfWords(spawns[stage][index][0], spawns[stage][index][1]));
-						} else {
-							// force spawn to be on lip of pit
-							stageData.splice(-1, 1);
-							stageData.push(getStageHeader(DEFAULT_SCALE, true, COMPRESSION_HWORD, numTargetsToAdd, stage));
-							stageData.push(coordsToHalfWords(spawns[YLINK][1][0], spawns[YLINK][1][1]));
-						}
-						break;
-					default:
-						// normal behavior
-						if (spawn) {
-							stageData.push(getSpawnHalfWords(stage));
-						}
-						break;
-				}
-			} else if (spawn) {
-				spawnPosition = Math.floor(getRandom() * spawns[stage].length);
-				let spawnCoordinates = getSpawnHalfWords(stage, enableMoving, spawnPosition);
-				if (mismatchMap && stage == ICECLIMBERS) {
-					const character = mismatchMap[stage];
-					if (character == DK || character == KIRBY || character == JIGGLYPUFF) {
-						// prevent instadeath by moving spawn up
-						const badSpawn = coordsToHalfWords(spawns[ICECLIMBERS][2][0], spawns[ICECLIMBERS][2][1]);
-						if (spawnCoordinates == badSpawn) {
-							spawnCoordinates = coordsToHalfWords(spawns[ICECLIMBERS][3][0], spawns[ICECLIMBERS][3][1]);
-						}
+				if (character == DK || character == KIRBY || character == JIGGLYPUFF) {
+					// prevent instadeath by moving spawn up
+					const badSpawn = coordsToHalfWords(spawns[ICECLIMBERS][2][0], spawns[ICECLIMBERS][2][1]);
+					if (spawnCoordinates == badSpawn) {
+						spawnCoordinates = coordsToHalfWords(spawns[ICECLIMBERS][3][0], spawns[ICECLIMBERS][3][1]);
 					}
 				}
-				stageData.push(spawnCoordinates);
 			}
+			stageData.push(spawnCoordinates);
 		}
 
-		const checkRandomExclusions = isCheckRandomExclusions(stage, weighted, schema, spawnPosition);
+		const checkRandomExclusions = isCheckRandomExclusions(stage, weighted, spawnPosition);
 		for (let i = 0; i < numTargetsToAdd; i++) {
-			const coords = getValidCoordinates(stage, weighted, schema, mismatchMap, checkRandomExclusions);
+			const coords = getValidCoordinates(stage, weighted, mismatchMap, checkRandomExclusions);
 			stageData.push(coordsToHalfWords(coords.x, coords.y));
 		}
 	}
@@ -481,8 +463,8 @@ function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribut
 	return result;
 }
 
-function isCheckRandomExclusions(stage, weighted, schema, spawnPosition = -1) {
-	if (schema >= 3 && weighted) {
+function isCheckRandomExclusions(stage, weighted, spawnPosition = -1) {
+	if (weighted) {
 		if (topSpawn[stage] != null && spawnPosition == topSpawn[stage]) {
 			// don't exclude if we spawn on top
 			return false;
@@ -499,10 +481,10 @@ function isCheckRandomExclusions(stage, weighted, schema, spawnPosition = -1) {
 }
 
 
-function getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema, mismatchMap) {
+function getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, mismatchMap) {
 	const numTargets = 10;
 	const stages = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
-	return getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, schema, mismatchMap);
+	return getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, mismatchMap);
 }
 
 function getMismatchCode() {
@@ -568,130 +550,75 @@ function getStageHeader(scale, spawn, compression, numTargets, stage) {
 	return header.toUpperCase();
 }
 
-function getValidCoordinates(stage, weighted, schema, mismatchMap, checkRandomExclusions) {
+function getValidCoordinates(stage, weighted, mismatchMap, checkRandomExclusions) {
 	let x;
 	let y;
 	let invalid = true;
 	while (invalid) {
-		if (schema == 1 ||
-			schema == 2) {
+		if (newBounds[stage] != null) {
+			x = getRandomDecimal(newBounds[stage].x1, newBounds[stage].x2);
+			y = getRandomDecimal(newBounds[stage].y1, newBounds[stage].y2);
+		} else {
 			x = getRandomDecimal(bounds[stage].x1, bounds[stage].x2);
 			y = getRandomDecimal(bounds[stage].y1, bounds[stage].y2);
-		} else {
-			if (newBounds[stage] != null) {
-				x = getRandomDecimal(newBounds[stage].x1, newBounds[stage].x2);
-				y = getRandomDecimal(newBounds[stage].y1, newBounds[stage].y2);
-			} else {
-				x = getRandomDecimal(bounds[stage].x1, bounds[stage].x2);
-				y = getRandomDecimal(bounds[stage].y1, bounds[stage].y2);
-			}
 		}
 
-		if (coordinatesValid(x, y, stage, weighted, schema, mismatchMap, checkRandomExclusions)) {
+		if (coordinatesValid(x, y, stage, weighted, mismatchMap, checkRandomExclusions)) {
 			invalid = false;
 		}
 	}
 	return { x: x, y: y };
 }
 
-function coordinatesValid(x, y, stage, weighted, schema, mismatchMap, checkRandomExclusions) {
-	if (schema == 1) {
-		if (exclusions[stage] != null) {
-			for (let i = 0; i < exclusions[stage].length; i++) {
-				const vs = exclusions[stage][i];
-				if (withinBounds(x, y, vs)) {
-					if (exceptions[stage] != null) {
-						for (let j = 0; j < exceptions[stage].length; j++) {
-							const ex = exceptions[stage][j];
-							if (withinBounds(x, y, ex)) {
-								return true;
-							}
-						}
-					}
-					return false;
-				}
-			}
-		}
-		return true;
-	} else if (schema == 2) {
-		if (mismatchMap) {
-			const character = mismatchMap[stage];
-			if (mismatchExclusions[stage] && mismatchExclusions[stage][character]) {
-				for (let i = 0; i < mismatchExclusions[stage][character].length; i++) {
-					const vs = mismatchExclusions[stage][character][i];
-					if (withinBounds(x, y, vs)) {
-						return false;
-					}
-				}
-			}
-		}
-		if (exceptions[stage] != null) {
-			for (let j = 0; j < exceptions[stage].length; j++) {
-				const ex = exceptions[stage][j];
-				if (withinBounds(x, y, ex)) {
-					return true;
-				}
-			}
-		}
-		if (exclusions[stage] != null) {
-			for (let i = 0; i < exclusions[stage].length; i++) {
-				const vs = exclusions[stage][i];
+function coordinatesValid(x, y, stage, weighted, mismatchMap, checkRandomExclusions) {
+	if (mismatchMap) {
+		const character = mismatchMap[stage];
+		if (mismatchExclusions[stage] && mismatchExclusions[stage][character]) {
+			for (let i = 0; i < mismatchExclusions[stage][character].length; i++) {
+				const vs = mismatchExclusions[stage][character][i];
 				if (withinBounds(x, y, vs)) {
 					return false;
 				}
 			}
 		}
-		return true;
-	} else {
-		if (mismatchMap) {
-			const character = mismatchMap[stage];
-			if (mismatchExclusions[stage] && mismatchExclusions[stage][character]) {
-				for (let i = 0; i < mismatchExclusions[stage][character].length; i++) {
-					const vs = mismatchExclusions[stage][character][i];
-					if (withinBounds(x, y, vs)) {
-						return false;
-					}
+	}
+	if (exceptions[stage] != null) {
+		for (let j = 0; j < exceptions[stage].length; j++) {
+			const ex = exceptions[stage][j];
+			if (withinBounds(x, y, ex)) {
+				if (weighted) {
+					return checkWeighted(x, y, stage);
 				}
+				return true;
 			}
 		}
-		if (exceptions[stage] != null) {
-			for (let j = 0; j < exceptions[stage].length; j++) {
-				const ex = exceptions[stage][j];
-				if (withinBounds(x, y, ex)) {
-					if (weighted) {
-						return checkWeighted(x, y, stage);
-					}
-					return true;
-				}
-			}
-		}
-		if (exclusions[stage] != null) {
-			for (let i = 0; i < exclusions[stage].length; i++) {
-				const vs = exclusions[stage][i];
-				if (withinBounds(x, y, vs)) {
-					return false;
-				}
-			}
-		}
-		if (newExclusions[stage] != null) {
-			for (let i = 0; i < newExclusions[stage].length; i++) {
-				const vs = newExclusions[stage][i];
-				if (withinBounds(x, y, vs)) {
-					return false;
-				}
-			}
-		}
-		if (checkRandomExclusions && randomExclusions[stage] != null) {
-			const vs = randomExclusions[stage].slice(1);
+	}
+	if (exclusions[stage] != null) {
+		for (let i = 0; i < exclusions[stage].length; i++) {
+			const vs = exclusions[stage][i];
 			if (withinBounds(x, y, vs)) {
 				return false;
 			}
 		}
-		if (weighted) {
-			return checkWeighted(x, y, stage);
-		}
-		return true;
 	}
+	if (newExclusions[stage] != null) {
+		for (let i = 0; i < newExclusions[stage].length; i++) {
+			const vs = newExclusions[stage][i];
+			if (withinBounds(x, y, vs)) {
+				return false;
+			}
+		}
+	}
+	if (checkRandomExclusions && randomExclusions[stage] != null) {
+		const vs = randomExclusions[stage].slice(1);
+		if (withinBounds(x, y, vs)) {
+			return false;
+		}
+	}
+	if (weighted) {
+		return checkWeighted(x, y, stage);
+	}
+	return true;
 }
 
 function checkWeighted(x, y, stage) {
@@ -886,10 +813,9 @@ function isRandomlyDistribute() {
 	return false;
 }
 
-function encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
+function encodeRandomizerId(seed, stage, numTargets, spawn, mismatch,
 	reduceImpossible, enableSpeedrunCodes, weighted,
 	enableMoving, randomlyDistribute) {
-	if (!schema) schema = CURRENT_SCHEMA;
 	let options = "1";
 
 	let mask = 0;
@@ -912,7 +838,7 @@ function encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
 		extra += base62.encode(parseInt(mask));
 	}
 
-	let encoded = base62.encode(schema) + base62.encode(parseInt(options)) + base62.encode(seed);
+	let encoded = base62.encode(CURRENT_SCHEMA) + base62.encode(parseInt(options)) + base62.encode(seed);
 	if (extra.length > 1) {
 		encoded += extra;
 	}
