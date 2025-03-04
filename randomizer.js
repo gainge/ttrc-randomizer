@@ -48,7 +48,6 @@
 includeJs("seedrandom.js");
 
 var resultBox = document.querySelector('#result');
-var stageBox = document.querySelector('#stage');
 var spawnBox = document.querySelector('#spawn');
 var numTargetsBox = document.querySelector('#num-targets');
 var numTargetsDiv = document.querySelector('#num-targets-div');
@@ -337,8 +336,8 @@ function _randomize(seed, schema, attempts) {
 		}
 		getRandom = new Math.seedrandom(seed);
 
-		var stage = getStage();
-		var numTargets = getNumTargets(stage);
+		var stage = ALL;
+		var numTargets = getNumTargets(stage); // This is also constant
 		var spawn = isSpawn();
 		var mismatch = isMismatch();
 		var reduceImpossible = isReduceImpossible();
@@ -362,32 +361,24 @@ function _randomize(seed, schema, attempts) {
 		showHideGeckoNote();
 
 		var code = "";
-		if (stage == ALL) {
-			if (schema == 1) {
-				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
-				if (mismatch) {
-					var mismatchObject = getMismatchCode();
-					code += '\n' + mismatchObject['code'];
-				}
-			} else {
-				if (mismatch) {
-					mismatchObject = getMismatchCode();
-					if (reduceImpossible) {
-						code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema, mismatchObject['map']);
-					} else {
-						code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
-					}
-					code += '\n' + mismatchObject['code'];
+		if (schema == 1) {
+			code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
+			if (mismatch) {
+				var mismatchObject = getMismatchCode();
+				code += '\n' + mismatchObject['code'];
+			}
+		} else {
+			if (mismatch) {
+				mismatchObject = getMismatchCode();
+				if (reduceImpossible) {
+					code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema, mismatchObject['map']);
 				} else {
 					code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
 				}
+				code += '\n' + mismatchObject['code'];
+			} else {
+				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema);
 			}
-		} else if (stage == RANDOM) {
-			stage = Math.floor(getRandom() * stageHooks.length);
-			stageBox.value = stage.toString();
-			code = getCode(stage, spawn, weighted, enableMoving, schema);
-		} else {
-			code = getCode(stage, spawn, weighted, enableMoving, schema);
 		}
 
 		code += '\n' + defaultCodes;
@@ -599,12 +590,9 @@ function getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, sch
 function showHideGeckoNote() {
 	geckoNote.style.display = "none";
 
-	var stage = getStage();
-	if (stage == ALL) {
-		var numTargets = getNumTargets();
-		if (numTargets > 15) {
-			geckoNote.style.display = "block";
-		}
+	var numTargets = getNumTargets();
+	if (numTargets > 15) {
+		geckoNote.style.display = "block";
 	}
 }
 
@@ -945,18 +933,6 @@ function copy() {
 	document.execCommand('copy');
 }
 
-function onChangeStage() {
-	var stage = getStage();
-	if (stage == ALL) {
-		mismatchCheckboxDiv.style.display = "block";
-	} else {
-		mismatchCheckboxDiv.style.display = "none";
-		impossibleCheckboxDiv.style.display = "none";
-		mismatchCheckbox.checked = false;
-		impossibleCheckbox.checked = false;
-	}
-}
-
 function showOptions() {
 	optionsDiv.style.display = "block";
 	optionsButton.style.display = "none";
@@ -995,18 +971,6 @@ function showCodeDetails() {
 
 function optionsActive() {
 	return optionsDiv.style.display != "none";
-}
-
-function getStage() {
-	var stage;
-	if (stageBox.value == "all") {
-		stage = ALL;
-	} else if (stageBox.value == "random") {
-		stage = RANDOM;
-	} else {
-		stage = parseInt(stageBox.value);
-	}
-	return stage;
 }
 
 function getNumTargets(stage) {
@@ -1181,7 +1145,6 @@ function decodeRandomizerId(id) {
 	}
 
 	if (isNaN(numTargets) || (numTargets < 1 || numTargets > 255) ||
-		isNaN(stage) || ((stage < DRMARIO || stage > SHEIK) && stage != ALL) ||
 		isNaN(winCondition) || (enableWinCondition && (winCondition < 1 || winCondition > numTargets))) {
 		return false;
 	}
@@ -1212,7 +1175,6 @@ function loadCodeFromSeed(id) {
 	var decoded = decodeRandomizerId(id);
 
 	if (decoded) {
-		stageBox.value = (decoded.stage == 99 ? "all" : decoded.stage.toString());
 		numTargetsBox.value = decoded.numTargets.toString();
 		spawnBox.checked = decoded.spawn;
 		mismatchCheckbox.checked = decoded.mismatch;
