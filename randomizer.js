@@ -204,6 +204,7 @@ function setIconHoverState(hoverEnabled, col, row) {
 	}
 }
 
+document.getElementById('reset-button').addEventListener('click', resetGridSettings);
 
 function resetGridSettings() {
 	setExclusions();
@@ -329,11 +330,9 @@ function _randomize(seed, schema, attempts) {
 
 		if (!schema) schema = 2;
 
-		var load = true;
 		if (!seed) {
 			getRandom = new Math.seedrandom();
 			seed = Math.floor(getRandom() * Number.MAX_SAFE_INTEGER);
-			load = false;
 		}
 		getRandom = new Math.seedrandom(seed);
 
@@ -392,10 +391,6 @@ function _randomize(seed, schema, attempts) {
 			_randomize(undefined, schema, attempts + 1);
 		}
 	}, 0);
-}
-
-function getCode(stage, spawn, weighted, enableMoving, schema) {
-	return getModularCode([stage], spawn, weighted, enableMoving, false, 10, schema);
 }
 
 function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, schema, mismatchMap) {
@@ -1441,7 +1436,7 @@ const noScoreFix = "C21C4344 00000003\n2C030000 40820008\n38600001 3803FFFF\n600
  * Stage boundaries and exclusions by megaqwertification
  * https://docs.google.com/document/d/1Dke2FDt5gVqJZyGCLipJYVynHd7EIbuxknme12z_gf4/edit#
  */
-bounds = [
+const bounds = [
 	{ x1: -130, y1: -130, x2: 130, y2: 130 }, // 00 DRMARIO
 	{ x1: -150, y1: -100, x2: 130, y2: 150 }, // 01 MARIO
 	{ x1: -70, y1: -70, x2: 70, y2: 70 }, // 02 LUIGI
@@ -1473,7 +1468,7 @@ bounds = [
 /*
  * Adjusted bounds for 3.0
  */
-newBounds = [];
+const newBounds = [];
 newBounds[DRMARIO] = { x1: -145, y1: -140, x2: 150, y2: 130 };
 newBounds[BOWSER] = { x1: -105, y1: -150, x2: 250, y2: 100 };
 newBounds[DK] = { x1: -190, y1: -30, x2: 190, y2: 225 };
@@ -1484,7 +1479,7 @@ newBounds[SAMUS] = { x1: -130, y1: -110, x2: 130, y2: 150 };
 /*
  * Two-coordinate pairs are assumed to be bottom-left and top-right corners of a rectangle
  */
-exclusions = [];
+const exclusions = [];
 exclusions[DRMARIO] = [
 	[[-95, -25], [-80, 90]], // Boundary 1
 	[[30, 10], [70, -35], [80, -25], [40, 20]], // Boundary 2
@@ -1728,7 +1723,7 @@ exclusions[SHEIK] = [
 /*
  * New exclusions for 3.0
  */
-newExclusions = [];
+const newExclusions = [];
 newExclusions[DK] = [
 	[[-190, -30], [-80, 0]],
 	[[-30, -30], [190, 0]],
@@ -1741,7 +1736,7 @@ newExclusions[FALCO] = [
 /*
  * Exceptions to the exclusions
  */
-exceptions = [];
+const exceptions = [];
 exceptions[YLINK] = [
 	[[-45, 130], [-15, 150]], // Box in Boundary 7
 ];
@@ -1755,7 +1750,7 @@ exceptions[ROY] = [
  * Vanilla spawn point is assumed to be first
  * https://docs.google.com/document/d/19G9saXWbFKIWBrVeNEu-Ng2oTuj1y8Kk8cYQ5Lb6MfM/edit
  */
-spawns = [];
+const spawns = [];
 spawns[DRMARIO] = [
 	[-65, -110],
 	[-40, -35], // 2
@@ -1944,7 +1939,7 @@ spawns[SHEIK] = [
  * Mismatch exclusions by djwang88 (with consultation by chaos6)
  * Map is stage to character
  */
-mismatchExclusions = [];
+const mismatchExclusions = [];
 
 mismatchExclusions[MARIO] = [];
 mismatchExclusions[MARIO][LUIGI] = [
@@ -2376,7 +2371,7 @@ mismatchExclusions[ROY][GANONDORF] = [
 /*
  * Weights by djwang88 (with consultation by chaos6 and megaqwertification)
  */
-weights = [];
+const weights = [];
 weights[DRMARIO] = [
 	[0.1, [95, 80], [150, 130]], 		// top-right
 	[0.5, [70, -105], [150, -60]],		// bottom-right
@@ -2496,7 +2491,7 @@ weights[ROY] = [
 /*
  * Random exclusions
  */
-randomExclusions = [];
+const randomExclusions = [];
 randomExclusions[PEACH] = [0.35, [-110, 120], [-110, 150],		// top
 	[180, 150], [180, 65], [150, 65], [150, 85],
 	[30, 130], [17, 130], [17, 120]];
@@ -2509,8 +2504,7 @@ randomExclusions[JIGGLYPUFF] = [0.35, [-150, 70], [130, 90]];	// top
 /*
  * Top spawn indices
  */
-topSpawn =
- [];
+const topSpawn = [];
 topSpawn[PEACH] = 3;
 topSpawn[YOSHI] = 3;
 topSpawn[SAMUS] = 2;
