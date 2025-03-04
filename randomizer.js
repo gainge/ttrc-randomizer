@@ -222,7 +222,6 @@ function buildExclusionSelector() {
 
 }
 
-
 function logMapping(mismatchMap) {
 	let logString = "";
 
@@ -243,27 +242,24 @@ mismatchCheckbox.checked = true;
 showHideMismatch();
 speedrunCodesCheckbox.checked = true;
 
-function isUniqueMismatch(mismatchMap, seed) {
+function isUniqueMismatch(mismatchMap) {
 	for (let i = 0; i < mismatchMap.length; i++) {
 		// Check against TTRC Exclusions (with offset :P)
 		const char = mismatchMap[i];
 
 		if (customExclusions[char][i].checked) {
-			const failString = "[" + seed + "] Failed! -> " + CHAR_STRINGS[char] + " on " + CHAR_STRINGS[i];
+			// Used to include encode here, will have to extract if we want that back
+			const failString = "Failed! -> " + CHAR_STRINGS[char] + " on " + CHAR_STRINGS[i];
 			const cause = TTRC_EXCLUSIONS[char].includes(i) ? 
 				" (TTRC" + (TTRC_EXCLUSIONS[char].indexOf(i) + 1) + ")" :
 				(char === i) ?
 				" (Vanilla)" :
 				" (Custom Exclusion)";
-			console.log(failString + cause);
+			// console.log(failString + cause);
 
 			return false;
 		}
 	}
-
-	console.log("Success! " + seed);
-	console.log(mismatchMap);
-	logMapping(mismatchMap);
 	return true;
 }
 
@@ -273,6 +269,9 @@ function randomize(seed) {
 	
 	document.getElementById('attempt-count').innerHTML = '';
 	document.getElementById('randomize').disabled = true;
+	document.getElementById('result').value = '';
+	document.getElementById('randomizer-id').value = '';
+	document.getElementById('loader').classList.remove('hidden');
 	_randomize(seed, 1);
 }
 
@@ -294,10 +293,26 @@ function _randomize(seed, attempts) {
 		const enableMoving = isEnableMoving();
 		const randomlyDistribute = isRandomlyDistribute();
 		let mismatchObject = undefined;
+		let isUnique = false;
 
 		let code = "";
+		let encoded = 'default';
+
 		if (mismatch) {
 			mismatchObject = getMismatchCode();
+
+			// Add in some early stopping for uniqueness
+			isUnique = mismatchObject && isUniqueMismatch(mismatchObject['map']);
+			if (!isUnique) {
+				_randomize(undefined, attempts + 1);
+				return;
+			} else {
+				encoded = encodeRandomizerId(seed, stage, numTargets, spawn, mismatch, reduceImpossible, enableSpeedrunCodes, weighted, enableMoving, randomlyDistribute);
+				console.log("Success! " + encoded);
+				console.log(mismatchObject);
+				logMapping(mismatchObject.map);
+			}
+
 			if (reduceImpossible) {
 				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, mismatchObject['map']);
 			} else {
@@ -313,11 +328,6 @@ function _randomize(seed, attempts) {
 		if (enableSpeedrunCodes) {
 			code += '\n' + speedrunCodes;
 		}
-
-		resultBox.value = code;
-		idBox.value = encodeRandomizerId(seed, stage, numTargets, spawn, mismatch,
-			reduceImpossible, enableSpeedrunCodes, weighted,
-			enableMoving, randomlyDistribute);
 		
 
 		if (!mismatchObject) {
@@ -325,8 +335,11 @@ function _randomize(seed, attempts) {
 			return
 		}
 		
-		if (mismatchObject && isUniqueMismatch(mismatchObject.map, idBox.value)) {
+		if (mismatchObject && isUnique) {
+			idBox.value = encoded;
 			document.getElementById('randomize').disabled = false;
+			resultBox.value = code;
+			document.getElementById('loader').classList.add('hidden');
 			return;
 		} else {
 			_randomize(undefined, attempts + 1);
@@ -516,7 +529,12 @@ function getMismatchCode() {
 		} else {
 			const index = randomized[randomizedCounter];
 			code += stageIds[index];
-			mismatchMap[index] = characterIds.indexOf(i);
+			const character = characterIds.indexOf(i);
+			mismatchMap[index] = character;
+			if (customExclusions[character][index].checked) {
+				return undefined; // In our exclusion list, stop early
+			}
+
 			randomizedCounter++;
 		}
 		if ((i + 1) % 8 == 0) {
