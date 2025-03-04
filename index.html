@@ -185,7 +185,7 @@
                     <td style="min-width: 210px">
                         <div id="chooser">
                             <div id="randomize-button-container">
-                                <p><button id="randomize" onclick="randomize()" class="button">RANDOMIZE</button></p>
+                                <p><button id="randomize" class="button">RANDOMIZE</button></p>
                                 <p>Attempts: <span id="attempt-count"></span></p>
                             </div>
                             <div id="show-options">
@@ -196,7 +196,6 @@
                             <div id="seed-div" style="margin-top: 8px">
                                 <label for="randomizer-id">Seed:</label>
                                 <input id="randomizer-id" style="width: 140px">
-                                <button id="load" onclick="loadCode()">Load</button>
                             </div>
                             <div style="margin-top: 8px">
                                 <input id="spawn" type="checkbox">Randomize spawn location
@@ -219,7 +218,6 @@
                             <div id="randomly-distribute-div">
                                 <input id="randomly-distribute" type="checkbox" "="">Randomly distribute targets <i>(experimental)</i>
                             </div>
-                            <button onclick="hideOptions()" style="margin-top: 8px">Cancel</button>
                             <div id="mismatch-note" style="display: none; margin-top: 30px;">
                                 <b>NOTE: </b>Because target bounds and spawns are designed with each <br>stage's default character in mind, randomizing character mismatch may <br>result in unwinnable character &amp; stage combinations or other issues.
                             </div>
@@ -245,21 +243,6 @@
                     </li>
                     <li><b>Randomize spawn location</b> chooses from a set of fixed spawn points</li>
                     <li><b>Randomize character mismatch</b> maps every character to a random stage</li>
-                    <li><b>Enable speedrun codes</b> appends a <a href="#" onclick="showCodeDetails()">standardized set of codes</a> to the main code
-                        <div id="code-details" style="display: none"><ul>
-                            <li>Unlock All Characters and Stages [<b>Datel</b>]</li>
-                            <li>Boot to Target Test [<b>djwang88</b>]</li>
-                            <li>Disable Special Messages [<b>Most</b>]</li>
-                            <li>Disable Trophy Messages [<b>Achilles</b>]</li>
-                            <li>Pause During Game Start [<b>UnclePunch</b>]</li>
-                            <li>C-Stick in Single Player [<b>Zauron</b>]</li>
-                            <li>Disable Player HUD [<b>Achilles</b>]</li>
-                            <li>Remove Pause Textures [<b>djwang88</b>]</li>
-                            <li>Disable "Go!" Text Graphic [<b>gadzook</b>]</li>
-                            <li>Toggle Fixed Cam (D-Pad) [<b>djwang88</b>]</li>
-                            <li>Simple Target Counter [<b>djwang88, Punkline</b>]</li>
-                        </ul></div>
-                    </li>
                     <li>The <b>custom win condition</b> option ends the game after the specified number of targets are broken</li>
                 </ul>
                 <b>FAQ/Troubleshooting:</b>
