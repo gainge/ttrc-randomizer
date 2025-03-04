@@ -195,10 +195,6 @@
                                 <input id="randomizer-id" style="width: 140px">
                                 <button id="load" onclick="loadCode()">Load</button>
                             </div>
-                            <div id="num-targets-div" style="margin-top: 10px">
-                                <label for="num-targets">Number of targets: </label>
-                                <input id="num-targets" style="width: 40px" value="10">
-                            </div>
                             <div style="margin-top: 8px">
                                 <input id="spawn" type="checkbox">Randomize spawn location
                             </div>
@@ -238,9 +234,6 @@
             </tbody></table>
 
             </div>
-            <div id="gecko-limitation-note" style="color: red; display: none; margin-top: 10px;">
-                <b>WARNING: </b>Because Gecko codes are limited to a certain length, depending on how many other codes are <br>enabled, generating an all-stages code with too many targets may result in the code not working at all.
-            </div>
             <br>
             <div>
                 <b>Usage Notes:</b>
@@ -255,7 +248,6 @@
                     <li>Copy the randomizer <b>Seed</b> and use the <b>Load</b> feature to share randomizer stages
                         <ul><li>(<i>For long-term archival, it is recommended to copy and save the entire code</i>)</li></ul>
                     </li>
-                    <li><b>Number of targets</b> places a specified number of targets on the stage (between 1 and 255)</li>
                     <li><b>Randomize spawn location</b> chooses from a set of fixed spawn points</li>
                     <li><b>Randomize character mismatch</b> maps every character to a random stage</li>
                     <li><b>Enable speedrun codes</b> appends a <a href="#" onclick="showCodeDetails()">standardized set of codes</a> to the main code

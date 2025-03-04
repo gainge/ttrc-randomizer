@@ -49,8 +49,6 @@ includeJs("seedrandom.js");
 
 var resultBox = document.querySelector('#result');
 var spawnBox = document.querySelector('#spawn');
-var numTargetsBox = document.querySelector('#num-targets');
-var numTargetsDiv = document.querySelector('#num-targets-div');
 var optionsButton = document.querySelector('#show-options');
 var optionsDiv = document.querySelector('#options-div');
 var mismatchCheckboxDiv = document.querySelector('#mismatch-checkbox-div');
@@ -59,7 +57,6 @@ var mismatchNote = document.querySelector('#mismatch-note');
 var impossibleCheckboxDiv = document.querySelector('#impossible-checkbox-div');
 var impossibleCheckbox = document.querySelector('#impossible-checkbox');
 var idBox = document.querySelector('#randomizer-id');
-var geckoNote = document.querySelector('#gecko-limitation-note');
 var winConditionCheckbox = document.querySelector('#win-condition');
 var winConditionDiv = document.querySelector('#win-condition-div');
 var winConditionBox = document.querySelector('#win-condition-box');
@@ -337,7 +334,7 @@ function _randomize(seed, schema, attempts) {
 		getRandom = new Math.seedrandom(seed);
 
 		var stage = ALL;
-		var numTargets = getNumTargets(stage); // This is also constant
+		var numTargets = 10;
 		var spawn = isSpawn();
 		var mismatch = isMismatch();
 		var reduceImpossible = isReduceImpossible();
@@ -348,17 +345,10 @@ function _randomize(seed, schema, attempts) {
 		var enableMoving = isEnableMoving();
 	  	var randomlyDistribute = isRandomlyDistribute();
 
-		if (isNaN(numTargets) || numTargets < 1 || numTargets > 255) {
-			resultBox.value = "Number of targets must be a number between 1 and 255."
-			return;
-		}
-
 		if (enableWinCondition && (isNaN(winCondition) || winCondition < 1 || winCondition > numTargets)) {
 			resultBox.value = "Win condition must be a number between 1 and the number of targets."
 			return;
 		}
-
-		showHideGeckoNote();
 
 		var code = "";
 		if (schema == 1) {
@@ -387,10 +377,6 @@ function _randomize(seed, schema, attempts) {
 			code += '\n' + speedrunCodes;
 		}
 
-		if (numTargets > 15 && !enableSpeedrunCodes) {
-			code += '\n' + targetCounterCode;
-		}
-
 		if (enableWinCondition && winCondition != numTargets) {
 			code += '\n' + winConditionCode + winCondition.toString(16).padStart(2, '0').toUpperCase();
 			code += '\n' + noScoreFix;
@@ -417,7 +403,7 @@ function _randomize(seed, schema, attempts) {
 }
 
 function getCode(stage, spawn, weighted, enableMoving, schema) {
-	return getModularCode([stage], spawn, weighted, enableMoving, false, getNumTargets(stage), schema);
+	return getModularCode([stage], spawn, weighted, enableMoving, false, 10, schema);
 }
 
 function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, schema, mismatchMap) {
@@ -579,21 +565,9 @@ function isCheckRandomExclusions(stage, weighted, schema, spawnPosition = -1) {
 
 
 function getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, schema, mismatchMap) {
-	var numTargets = getNumTargets();
-	var stages = [];
-	for (let i = 0; i < 26; i++) {
-		stages.push(i);
-	}
+	var numTargets = 10;
+	var stages = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 	return getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, schema, mismatchMap);
-}
-
-function showHideGeckoNote() {
-	geckoNote.style.display = "none";
-
-	var numTargets = getNumTargets();
-	if (numTargets > 15) {
-		geckoNote.style.display = "block";
-	}
 }
 
 function getMismatchCode() {
@@ -959,7 +933,7 @@ function showHideMismatch() {
 function showHideWinCondition() {
 	if (isWinCondition()) {
 		winConditionDiv.style.display = "block";
-		winConditionBox.value = numTargetsBox.value;
+		winConditionBox.value = 10;
 	} else {
 		winConditionDiv.style.display = "none";
 	}
@@ -971,14 +945,6 @@ function showCodeDetails() {
 
 function optionsActive() {
 	return optionsDiv.style.display != "none";
-}
-
-function getNumTargets(stage) {
-	var numTargets = stage != SHEIK ? 10 : 3;
-	if (optionsActive()) {
-		numTargets = parseInt(numTargetsBox.value);
-	}
-	return numTargets;
 }
 
 function isSpawn() {
@@ -1175,7 +1141,6 @@ function loadCodeFromSeed(id) {
 	var decoded = decodeRandomizerId(id);
 
 	if (decoded) {
-		numTargetsBox.value = decoded.numTargets.toString();
 		spawnBox.checked = decoded.spawn;
 		mismatchCheckbox.checked = decoded.mismatch;
 		speedrunCodesCheckbox.checked = decoded.enableSpeedrunCodes;
