@@ -51,7 +51,6 @@ var resultBox = document.querySelector('#result');
 var spawnBox = document.querySelector('#spawn');
 var optionsButton = document.querySelector('#show-options');
 var optionsDiv = document.querySelector('#options-div');
-var mismatchCheckboxDiv = document.querySelector('#mismatch-checkbox-div');
 var mismatchCheckbox = document.querySelector('#mismatch-checkbox');
 var mismatchNote = document.querySelector('#mismatch-note');
 var impossibleCheckboxDiv = document.querySelector('#impossible-checkbox-div');
@@ -61,7 +60,6 @@ var speedrunCodesCheckbox = document.querySelector('#speedrun-codes');
 var weightedCheckbox = document.querySelector('#weighted');
 var codeDetailsDiv = document.querySelector('#code-details');
 var enableMovingCheckbox = document.querySelector('#enable-moving');
-var randomlyDistributeDiv = document.querySelector('#randomly-distribute-div');
 var randomlyDistributeCheckbox = document.querySelector('#randomly-distribute');
 
 var getRandom;
@@ -159,6 +157,15 @@ let columnIcons = [];
 function setCheckBox(checkbox, value) {
 	checkbox.checked = value;
 }
+
+
+document.getElementById('vanilla').addEventListener('change', (e) => toggleVanillaExclusions(e.target));
+document.getElementById('ttrc1').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 0));
+document.getElementById('ttrc2').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 1));
+document.getElementById('ttrc3').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 2));
+document.getElementById('ttrc4').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 3));
+document.getElementById('ttrc5').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 4));
+document.getElementById('ttrc6').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 5));
 
 function toggleVanillaExclusions(checkbox) {
 	for (let i = 0; i < customExclusions.length; i++) {

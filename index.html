@@ -135,6 +135,9 @@
                     width: 1.5rem;
                 }
 
+                label {
+                    user-select: none;
+                }
 
             </style>
         </head>
@@ -144,19 +147,19 @@
             <div id="grid-control">
                 <!-- onchange="toggleVanillaExclusions()" -->
                 <h3 id="exclusion-header">Exclusions:</h3>
-                <input type="checkbox" name="vanilla" id="vanilla" checked="true" onchange="toggleVanillaExclusions(this)">
+                <input type="checkbox" name="vanilla" id="vanilla" checked="true"">
                 <label for="vanilla">Vanilla</label>
-                <input type="checkbox" name="ttrc1" id="ttrc1" checked="true" onchange="toggleTTRCExclusions(this, 0)">
+                <input type="checkbox" name="ttrc1" id="ttrc1" checked="true">
                 <label for="ttrc1">TTRC 1</label>
-                <input type="checkbox" name="ttrc2" id="ttrc2" checked="true" onchange="toggleTTRCExclusions(this, 1)">
+                <input type="checkbox" name="ttrc2" id="ttrc2" checked="true">
                 <label for="ttrc2">TTRC 2</label>
-                <input type="checkbox" name="ttrc3" id="ttrc3" checked="true" onchange="toggleTTRCExclusions(this, 2)">
+                <input type="checkbox" name="ttrc3" id="ttrc3" checked="true">
                 <label for="ttrc3">TTRC 3</label>
-                <input type="checkbox" name="ttrc4" id="ttrc4" checked="true" onchange="toggleTTRCExclusions(this, 3)">
+                <input type="checkbox" name="ttrc4" id="ttrc4" checked="true">
                 <label for="ttrc4">TTRC 4</label>
-                <input type="checkbox" name="ttrc5" id="ttrc5" checked="true" onchange="toggleTTRCExclusions(this, 4)">
+                <input type="checkbox" name="ttrc5" id="ttrc5" checked="true">
                 <label for="ttrc5">TTRC 5</label>
-                <input type="checkbox" name="ttrc6" id="ttrc6" checked="true" onchange="toggleTTRCExclusions(this, 5)">
+                <input type="checkbox" name="ttrc6" id="ttrc6" checked="true">
                 <label for="ttrc6">TTRC 6</label>
                 
                 <button id="reset-button" onclick="resetGridSettings()">Reset</button>
