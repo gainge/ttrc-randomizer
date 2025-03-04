@@ -296,7 +296,7 @@ function _randomize(seed, schema, attempts) {
 		const enableSpeedrunCodes = isSpeedrunCodes();
 		const weighted = isWeighted();
 		const enableMoving = isEnableMoving();
-	  	const randomlyDistribute = isRandomlyDistribute();
+		const randomlyDistribute = isRandomlyDistribute();
 		let mismatchObject = undefined;
 
 		let code = "";
