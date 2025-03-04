@@ -327,9 +327,6 @@ function _randomize(seed, schema, attempts) {
 	setTimeout(() => {
 		if (!schema) schema = CURRENT_SCHEMA;
 
-		attempts++;
-		document.getElementById('attempt-count').innerHTML = attempts;
-
 		if (!schema) schema = 2;
 
 		var load = true;
@@ -350,7 +347,7 @@ function _randomize(seed, schema, attempts) {
 		var winCondition = getWinCondition();
 		var weighted = isWeighted();
 		var enableMoving = isEnableMoving();
-	  var randomlyDistribute = isRandomlyDistribute();
+	  	var randomlyDistribute = isRandomlyDistribute();
 
 		if (isNaN(numTargets) || numTargets < 1 || numTargets > 255) {
 			resultBox.value = "Number of targets must be a number between 1 and 255."
