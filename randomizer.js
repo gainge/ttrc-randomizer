@@ -57,9 +57,6 @@ var mismatchNote = document.querySelector('#mismatch-note');
 var impossibleCheckboxDiv = document.querySelector('#impossible-checkbox-div');
 var impossibleCheckbox = document.querySelector('#impossible-checkbox');
 var idBox = document.querySelector('#randomizer-id');
-var winConditionCheckbox = document.querySelector('#win-condition');
-var winConditionDiv = document.querySelector('#win-condition-div');
-var winConditionBox = document.querySelector('#win-condition-box');
 var speedrunCodesCheckbox = document.querySelector('#speedrun-codes');
 var weightedCheckbox = document.querySelector('#weighted');
 var codeDetailsDiv = document.querySelector('#code-details');
@@ -339,16 +336,9 @@ function _randomize(seed, schema, attempts) {
 		var mismatch = isMismatch();
 		var reduceImpossible = isReduceImpossible();
 		var enableSpeedrunCodes = isSpeedrunCodes();
-		var enableWinCondition = isWinCondition();
-		var winCondition = getWinCondition();
 		var weighted = isWeighted();
 		var enableMoving = isEnableMoving();
 	  	var randomlyDistribute = isRandomlyDistribute();
-
-		if (enableWinCondition && (isNaN(winCondition) || winCondition < 1 || winCondition > numTargets)) {
-			resultBox.value = "Win condition must be a number between 1 and the number of targets."
-			return;
-		}
 
 		var code = "";
 		if (schema == 1) {
@@ -377,14 +367,9 @@ function _randomize(seed, schema, attempts) {
 			code += '\n' + speedrunCodes;
 		}
 
-		if (enableWinCondition && winCondition != numTargets) {
-			code += '\n' + winConditionCode + winCondition.toString(16).padStart(2, '0').toUpperCase();
-			code += '\n' + noScoreFix;
-		}
-
 		resultBox.value = code;
 		idBox.value = encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
-			reduceImpossible, enableSpeedrunCodes, enableWinCondition, winCondition, weighted,
+			reduceImpossible, enableSpeedrunCodes, weighted,
 			enableMoving, randomlyDistribute);
 		
 
@@ -930,15 +915,6 @@ function showHideMismatch() {
 	}
 }
 
-function showHideWinCondition() {
-	if (isWinCondition()) {
-		winConditionDiv.style.display = "block";
-		winConditionBox.value = 10;
-	} else {
-		winConditionDiv.style.display = "none";
-	}
-}
-
 function showCodeDetails() {
 	codeDetailsDiv.style.display = "block";
 }
@@ -967,17 +943,6 @@ function isReduceImpossible() {
 		return false;
 	}
 	return true;
-}
-
-function isWinCondition() {
-	if (optionsActive() && winConditionCheckbox.checked) {
-		return true;
-	}
-	return false;
-}
-
-function getWinCondition() {
-	return parseInt(winConditionBox.value);
 }
 
 function isSpeedrunCodes() {
@@ -1009,7 +974,7 @@ function isRandomlyDistribute() {
 }
 
 function encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
-	reduceImpossible, enableSpeedrunCodes, enableWinCondition, winCondition, weighted,
+	reduceImpossible, enableSpeedrunCodes, weighted,
 	enableMoving, randomlyDistribute) {
 	if (!schema) schema = CURRENT_SCHEMA;
 	var options = "1";
@@ -1019,12 +984,11 @@ function encodeRandomizerId(schema, seed, stage, numTargets, spawn, mismatch,
 	if (mismatch) mask |= OPTION_MISMATCH;
 	if (mismatch && reduceImpossible) mask |= OPTION_IMPOSSIBLE;
 	if (enableSpeedrunCodes) mask |= OPTION_SPEEDRUN;
-	if (enableWinCondition) mask |= OPTION_WIN;
 	if (weighted) mask |= OPTION_WEIGHTED;
 	options += mask.toString().padStart(2, '0');
 
 	options += numTargets.toString().padStart(3, '0');
-	options += enableWinCondition ? winCondition.toString().padStart(3, '0') : '000';
+	options += '000'; // no win condition
 	options += stage.toString().padStart(2, '0');
 
 	var extra = "-";
@@ -1144,12 +1108,9 @@ function loadCodeFromSeed(id) {
 		spawnBox.checked = decoded.spawn;
 		mismatchCheckbox.checked = decoded.mismatch;
 		speedrunCodesCheckbox.checked = decoded.enableSpeedrunCodes;
-		winConditionCheckbox.checked = decoded.enableWinCondition;
 		onChangeStage();
 		showHideMismatch(true);
-		showHideWinCondition();
 		impossibleCheckbox.checked = decoded.reduceImpossible;
-		winConditionBox.value = decoded.winCondition.toString();
 		weightedCheckbox.checked = decoded.weighted;
 		enableMovingCheckbox.checked = decoded.enableMoving;
 		randomlyDistributeCheckbox.checked = decoded.randomlyDistribute;
