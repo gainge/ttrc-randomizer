@@ -98,7 +98,8 @@
                 }
 
                 #grid-control {
-                    padding-left: 2rem;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 #grid-control>input {
@@ -115,6 +116,8 @@
 
                 #reset-button {
                     margin-left: 1rem;
+                    margin-top: 1rem;
+                    max-width: 4rem;
                 }
 
                 .grid-select {
@@ -166,31 +169,17 @@
                     display: none;
                 }
 
+                #rhs-container {
+                    margin-top: 2rem;
+                    display: flex;
+                    flex-direction: column;
+                }
+
             </style>
         </head>
         <body>
             <h1 id="page-header">Unique TTRC Randomizer</h1>
 
-            <div id="grid-control">
-                <!-- onchange="toggleVanillaExclusions()" -->
-                <h3 id="exclusion-header">Exclusions:</h3>
-                <input type="checkbox" name="vanilla" id="vanilla" checked="true"">
-                <label for="vanilla">Vanilla</label>
-                <input type="checkbox" name="ttrc1" id="ttrc1" checked="true">
-                <label for="ttrc1">TTRC 1</label>
-                <input type="checkbox" name="ttrc2" id="ttrc2" checked="true">
-                <label for="ttrc2">TTRC 2</label>
-                <input type="checkbox" name="ttrc3" id="ttrc3" checked="true">
-                <label for="ttrc3">TTRC 3</label>
-                <input type="checkbox" name="ttrc4" id="ttrc4" checked="true">
-                <label for="ttrc4">TTRC 4</label>
-                <input type="checkbox" name="ttrc5" id="ttrc5" checked="true">
-                <label for="ttrc5">TTRC 5</label>
-                <input type="checkbox" name="ttrc6" id="ttrc6" checked="true">
-                <label for="ttrc6">TTRC 6</label>
-                
-                <button id="reset-button">Reset</button>
-            </div>
             <div id="randomizer-wrapper">
                 <div id="selector-wrapper">
                     <div><p id="stage-label">stage</p></div>
@@ -200,96 +189,96 @@
                     </div>
                 </div>
 
-            <table style="margin-bottom: 5px">
-                <tbody><tr>
-                    <td style="min-width: 170px">
-                        <div id="gecko">
-                                <label for="result"><b>Gecko code:</b></label><br>
-                                <div style="position: relative;">
-                                    <textarea readonly="readonly" id="result" class="codeArea"></textarea>
-                                    <span class="loader hidden" id="loader"></span>
+            <div id="rhs-container">
+                <table style="margin-bottom: 5px">
+                    <tbody><tr>
+                        <td style="min-width: 170px">
+                            <div id="gecko">
+                                    <label for="result"><b>Gecko code:</b></label><br>
+                                    <div style="position: relative;">
+                                        <textarea readonly="readonly" id="result" class="codeArea"></textarea>
+                                        <span class="loader hidden" id="loader"></span>
+                                    </div>
+                                <div style="margin-top: 5px"><button id="copy" onclick="copy()" class="copyButton">Copy code to clipboard</button></div>
+                            </div>
+                        </td>
+                        <td style="min-width: 210px">
+                            <div id="chooser">
+                                <div id="randomize-button-container">
+                                    <p><button id="randomize" class="button">RANDOMIZE</button></p>
+                                    <p>Attempts: <span id="attempt-count"></span></p>
                                 </div>
-                            <div style="margin-top: 5px"><button id="copy" onclick="copy()" class="copyButton">Copy code to clipboard</button></div>
-                        </div>
-                    </td>
-                    <td style="min-width: 210px">
-                        <div id="chooser">
-                            <div id="randomize-button-container">
-                                <p><button id="randomize" class="button">RANDOMIZE</button></p>
-                                <p>Attempts: <span id="attempt-count"></span></p>
-                            </div>
-                            <div id="show-options">
-                                <button onclick="showOptions()">Advanced Options</button>
-                            </div>
-                        </div>
-                        <div id="options-div" style="display: none">
-                            <div id="seed-div" style="margin-top: 8px">
-                                <label for="randomizer-id">Seed:</label>
-                                <input id="randomizer-id" style="width: 140px">
-                            </div>
-                            <div style="margin-top: 8px">
-                                <input id="spawn" type="checkbox">Randomize spawn location
-                            </div>
-                            <div id="mismatch-checkbox-div">
-                                <input id="mismatch-checkbox" type="checkbox" onclick="showHideMismatch()">Randomize character mismatch
-                                <div id="impossible-checkbox-div" style="margin-left: 20px; display: none;">
-                                    <input id="impossible-checkbox" type="checkbox">Reduce impossible seeds (<i>recommended</i>)
+                                <div id="show-options">
+                                    <button onclick="showOptions()">Advanced Options</button>
                                 </div>
                             </div>
-                            <div style="margin-top: 8px">
-                                <input id="weighted" type="checkbox" checked="checked">Use weighted randomization
+                            <div id="options-div" style="display: none">
+                                <div id="seed-div" style="margin-top: 8px">
+                                    <label for="randomizer-id">Seed:</label>
+                                    <input id="randomizer-id" style="width: 140px">
+                                </div>
+                                <div style="margin-top: 8px">
+                                    <input id="spawn" type="checkbox">Randomize spawn location
+                                </div>
+                                <div id="mismatch-checkbox-div">
+                                    <input id="mismatch-checkbox" type="checkbox" onclick="showHideMismatch()">Randomize character mismatch
+                                    <div id="impossible-checkbox-div" style="margin-left: 20px; display: none;">
+                                        <input id="impossible-checkbox" type="checkbox">Reduce impossible seeds (<i>recommended</i>)
+                                    </div>
+                                </div>
+                                <div style="margin-top: 8px">
+                                    <input id="weighted" type="checkbox" checked="checked">Use weighted randomization
+                                </div>
+                                <div style="margin-top: 8px">
+                                    <input id="speedrun-codes" type="checkbox">Enable speedrun codes
+                                </div>
+                                <div style="margin-top: 8px">
+                                    <input id="enable-moving" type="checkbox" "="">Enable moving targets <i>(experimental)</i>
+                                </div>
+                                <div id="randomly-distribute-div">
+                                    <input id="randomly-distribute" type="checkbox" "="">Randomly distribute targets <i>(experimental)</i>
+                                </div>
                             </div>
-                            <div style="margin-top: 8px">
-                                <input id="speedrun-codes" type="checkbox">Enable speedrun codes
-                            </div>
-                            <div style="margin-top: 8px">
-                                <input id="enable-moving" type="checkbox" "="">Enable moving targets <i>(experimental)</i>
-                            </div>
-                            <div id="randomly-distribute-div">
-                                <input id="randomly-distribute" type="checkbox" "="">Randomly distribute targets <i>(experimental)</i>
-                            </div>
-                            <div id="mismatch-note" style="display: none; margin-top: 30px;">
-                                <b>NOTE: </b>Because target bounds and spawns are designed with each <br>stage's default character in mind, randomizing character mismatch may <br>result in unwinnable character &amp; stage combinations or other issues.
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+                <div id="grid-control">
+                    <!-- onchange="toggleVanillaExclusions()" -->
+                    <h3 id="exclusion-header">Exclusions:</h3>
+                    <div>
+                        <input type="checkbox" name="vanilla" id="vanilla" checked="true"">
+                        <label for="vanilla">Vanilla</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="ttrc1" id="ttrc1" checked="true">
+                        <label for="ttrc1">TTRC 1</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="ttrc2" id="ttrc2" checked="true">
+                        <label for="ttrc2">TTRC 2</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="ttrc3" id="ttrc3" checked="true">
+                        <label for="ttrc3">TTRC 3</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="ttrc4" id="ttrc4" checked="true">
+                        <label for="ttrc4">TTRC 4</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="ttrc5" id="ttrc5" checked="true">
+                        <label for="ttrc5">TTRC 5</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="ttrc6" id="ttrc6" checked="true">
+                        <label for="ttrc6">TTRC 6</label>
+                    </div>
+                    
+                    <button id="reset-button">Reset</button>
+                </div>
+            </div>
 
             </div>
             <br>
-            <div>
-                <b>Usage Notes:</b>
-                <ul>
-                    <li><a href="https://www.youtube.com/watch?v=F9imdQ8Hgbw"><b>Introduction Video</b></a></li>
-                    <li>Generates <b>random, fixed target positions</b>, with stage-specific exclusion rules to prevent collisions</li>
-                    <li>Dynamically builds a Gecko code, which can be used in <a href="https://dolphin-emu.org/"><b>Dolphin Emulator</b></a> or Wii Homebrew</li>
-                    <li>For help getting set up, check out the <a href="https://bttrandomizer.com/setupguide.html"><b>Visual Setup Guide</b></a></li>
-                </ul>
-                <b>Advanced Options:</b>
-                <ul>
-                    <li>Copy the randomizer <b>Seed</b> and use the <b>Load</b> feature to share randomizer stages
-                        <ul><li>(<i>For long-term archival, it is recommended to copy and save the entire code</i>)</li></ul>
-                    </li>
-                    <li><b>Randomize spawn location</b> chooses from a set of fixed spawn points</li>
-                    <li><b>Randomize character mismatch</b> maps every character to a random stage</li>
-                    <li>The <b>custom win condition</b> option ends the game after the specified number of targets are broken</li>
-                </ul>
-                <b>FAQ/Troubleshooting:</b>
-                <ul>
-                    <li>Target positions are <b>fixed</b> and will not change until a new code is generated and enabled</li>
-                    <li>If the code is enabled but doesn't have any effect, it's possible that there are too many other Gecko <br>codes enabled (due to codes having a limited amount of space in memory)</li>
-                    <li>It is possible to use the randomizer with Faster Melee or Slippi, but a beta version of Dolphin is <br>highly recommended for its Gecko code adding support</li>
-                </ul>
-            </div>
-            <p>
-                _______________________________________________________________________________<br>
-                Randomizer designed and built by <b>djwang88</b><br>
-                Stage &amp; spawn mappings determined by <b>megaqwertification</b><br>
-                Gecko code developed by <b>Punkline</b><br>
-                Mismatch consultation by <b>chaos6</b><br>
-                Inspired by <b>megaqwertification</b>, <b>hotdogturtle</b>, and <b>LinksDarkArrows</b><br>
-                Playtesting and feature suggestions by the <b><a href="https://discord.gg/AfEaYaE">Smash Stadium Discord</a></b>
-            </p>
         
     <script src="randomizer.js"></script><script type="text/javascript" src="seedrandom.js"></script></body><div id="tenten-safe-area-provider" style="all: initial;"></div></html>

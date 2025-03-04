@@ -5,7 +5,6 @@ const spawnBox = document.querySelector('#spawn');
 const optionsButton = document.querySelector('#show-options');
 const optionsDiv = document.querySelector('#options-div');
 const mismatchCheckbox = document.querySelector('#mismatch-checkbox');
-const mismatchNote = document.querySelector('#mismatch-note');
 const impossibleCheckboxDiv = document.querySelector('#impossible-checkbox-div');
 const impossibleCheckbox = document.querySelector('#impossible-checkbox');
 const idBox = document.querySelector('#randomizer-id');
@@ -265,86 +264,97 @@ function isUniqueMismatch(mismatchMap) {
 
 document.getElementById('randomize').addEventListener('click', randomize)
 
-function randomize(seed) {
+function randomize() {
 	
 	document.getElementById('attempt-count').innerHTML = '';
 	document.getElementById('randomize').disabled = true;
 	document.getElementById('result').value = '';
 	document.getElementById('randomizer-id').value = '';
 	document.getElementById('loader').classList.remove('hidden');
-	_randomize(seed, 1);
-}
 
-function _randomize(seed, attempts) {
+
+	// We set timeout for the initial invocation to allow the loader to show
 	setTimeout(() => {
-		if (!seed) {
+		let attempts = 0;
+		let seed;
+		let result = false;
+		do {
 			getRandom = new Math.seedrandom();
 			seed = Math.floor(getRandom() * Number.MAX_SAFE_INTEGER);
+			getRandom = new Math.seedrandom(seed);
+			result = _randomize(seed);
+			attempts++;
+		} while (!result);
+
+		console.log(attempts);
+	}, 0)
+}
+	
+
+function _randomize(seed) {
+	
+
+	const stage = ALL;
+	const numTargets = 10;
+	const spawn = isSpawn();
+	const mismatch = isMismatch();
+	const reduceImpossible = isReduceImpossible();
+	const enableSpeedrunCodes = isSpeedrunCodes();
+	const weighted = isWeighted();
+	const enableMoving = isEnableMoving();
+	const randomlyDistribute = isRandomlyDistribute();
+	let mismatchObject = undefined;
+	let isUnique = false;
+
+	let code = "";
+	let encoded = 'default';
+
+	if (mismatch) {
+		mismatchObject = getMismatchCode();
+
+		// Add in some early stopping for uniqueness
+		isUnique = mismatchObject && isUniqueMismatch(mismatchObject['map']);
+		if (!isUnique) {
+			return false;
+		} else {
+			encoded = encodeRandomizerId(seed, stage, numTargets, spawn, mismatch, reduceImpossible, enableSpeedrunCodes, weighted, enableMoving, randomlyDistribute);
+			console.log("Success! " + encoded);
+			console.log(mismatchObject);
+			logMapping(mismatchObject.map);
 		}
-		getRandom = new Math.seedrandom(seed);
 
-		const stage = ALL;
-		const numTargets = 10;
-		const spawn = isSpawn();
-		const mismatch = isMismatch();
-		const reduceImpossible = isReduceImpossible();
-		const enableSpeedrunCodes = isSpeedrunCodes();
-		const weighted = isWeighted();
-		const enableMoving = isEnableMoving();
-		const randomlyDistribute = isRandomlyDistribute();
-		let mismatchObject = undefined;
-		let isUnique = false;
-
-		let code = "";
-		let encoded = 'default';
-
-		if (mismatch) {
-			mismatchObject = getMismatchCode();
-
-			// Add in some early stopping for uniqueness
-			isUnique = mismatchObject && isUniqueMismatch(mismatchObject['map']);
-			if (!isUnique) {
-				_randomize(undefined, attempts + 1);
-				return;
-			} else {
-				encoded = encodeRandomizerId(seed, stage, numTargets, spawn, mismatch, reduceImpossible, enableSpeedrunCodes, weighted, enableMoving, randomlyDistribute);
-				console.log("Success! " + encoded);
-				console.log(mismatchObject);
-				logMapping(mismatchObject.map);
-			}
-
-			if (reduceImpossible) {
-				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, mismatchObject['map']);
-			} else {
-				code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute);
-			}
-			code += '\n' + mismatchObject['code'];
+		if (reduceImpossible) {
+			code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute, mismatchObject['map']);
 		} else {
 			code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute);
 		}
+		code += '\n' + mismatchObject['code'];
+	} else {
+		code = getAllStagesCode(spawn, weighted, enableMoving, randomlyDistribute);
+	}
 
-		code += '\n' + defaultCodes;
+	code += '\n' + defaultCodes;
 
-		if (enableSpeedrunCodes) {
-			code += '\n' + speedrunCodes;
-		}
-		
+	if (enableSpeedrunCodes) {
+		code += '\n' + speedrunCodes;
+	}
+	
 
-		if (!mismatchObject) {
-			document.getElementById('randomize').disabled = false;
-			return
-		}
-		
-		if (mismatchObject && isUnique) {
-			idBox.value = encoded;
-			document.getElementById('randomize').disabled = false;
-			resultBox.value = code;
-			document.getElementById('loader').classList.add('hidden');
-			return;
-		} else {
-			_randomize(undefined, attempts + 1);
-		}
-	}, 0);
+	if (!mismatchObject) {
+		document.getElementById('randomize').disabled = false;
+		alert('bruh');
+		return true;
+	}
+	
+	if (mismatchObject && isUnique) {
+		idBox.value = encoded;
+		document.getElementById('randomize').disabled = false;
+		resultBox.value = code;
+		document.getElementById('loader').classList.add('hidden');
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function getModularCode(stages, spawn, weighted, enableMoving, randomlyDistribute, numTargets, mismatchMap) {
@@ -768,11 +778,9 @@ function showOptions() {
 
 function showHideMismatch() {
 	if (isMismatch()) {
-		mismatchNote.style.display = "block";
 		impossibleCheckboxDiv.style.display = "block";
 		impossibleCheckbox.checked = true;
 	} else {
-		mismatchNote.style.display = "none";
 		impossibleCheckboxDiv.style.display = "none";
 	}
 }
