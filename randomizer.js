@@ -263,8 +263,8 @@ function buildExclusionSelector() {
 					customExclusions[i].push(selector);
 
 					// Add super cool dynamic hover to selection items
-					selector.addEventListener('mouseenter', _ => setIconHoverState(true, i, j));
-					selector.addEventListener('mouseleave', _ => setIconHoverState(false, i, j));
+					selector.addEventListener('mouseenter', () => setIconHoverState(true, i, j));
+					selector.addEventListener('mouseleave', () => setIconHoverState(false, i, j));
 				}
 			}
 		}
