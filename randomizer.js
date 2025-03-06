@@ -17,31 +17,31 @@ let getRandom;
 
 // STAGE = TTRC_EXCLUSIONS[CHARACTER][TTRC]
 const TTRC_EXCLUSIONS = [
-    [20, 3, 19, 10, 7, 2, 23],
-    [5, 8, 15, 23, 3, 12, 22],
-    [24, 7, 21, 4, 8, 18, 20],
-    [17, 10, 7, 7, 16, 13, 8],
-    [23, 12, 16, 19, 21, 11, 7],
-    [6, 23, 3, 21, 1, 22, 2],
-    [22, 13, 1, 12, 19, 0, 5],
-    [21, 6, 17, 11, 12, 3, 9],
-    [2, 5, 9, 0, 4, 24, 19],
-    [16, 19, 4, 13, 5, 17, 0],
-    [9, 24, 6, 2, 18, 19, 4],
-    [4, 20, 0, 6, 17, 1, 16],
-    [8, 16, 18, 5, 15, 7, 6],
-    [18, 17, 11, 16, 20, 9, 1],
-    [10, 18, 12, 22, 2, 15, 17],
-    [12, 4, 2, 9, 14, 5, 10],
-    [3, 1, 5, 20, 13, 21, 12],
-    [15, 0, 10, 3, 11, 14, 24],
-    [7, 11, 24, 1, 6, 16, 13],
-    [14, 22, 20, 8, 9, 10, 3],
-    [13, 9, 23, 24, 22, 4, 21],
-    [11, 14, 13, 17, 0, 23, 18],
-    [1, 2, 14, 15, 23, 8, 11],
-    [19, 15, 8, 18, 24, 20, 14],
-    [0, 21, 22, 14, 10, 6, 15]
+    [20, 3, 19, 10, 7, 2, 23, undefined, 1],
+    [5, 8, 15, 23, 3, 12, 22, 9, undefined],
+    [24, 7, 21, 4, 8, 18, 20, undefined, 6],
+    [17, 10, 7, 7, 16, 13, 8, undefined, 21],
+    [23, 12, 16, 19, 21, 11, 7, 10, undefined],
+    [6, 23, 3, 21, 1, 22, 2, undefined, 17],
+    [22, 13, 1, 12, 19, 0, 5, undefined, 24],
+    [21, 6, 17, 11, 12, 3, 9, 15, undefined],
+    [2, 5, 9, 0, 4, 24, 19, undefined, 5],
+    [16, 19, 4, 13, 5, 17, 0, 21, undefined],
+    [9, 24, 6, 2, 18, 19, 4, 12, undefined],
+    [4, 20, 0, 6, 17, 1, 16, undefined, 14],
+    [8, 16, 18, 5, 15, 7, 6, undefined, 13],
+    [18, 17, 11, 16, 20, 9, 1, undefined, 8],
+    [10, 18, 12, 22, 2, 15, 17, 23, undefined],
+    [12, 4, 2, 9, 14, 5, 10, 3, undefined],
+    [3, 1, 5, 20, 13, 21, 12, undefined, 11],
+    [15, 0, 10, 3, 11, 14, 24, 22, undefined],
+    [7, 11, 24, 1, 6, 16, 13, undefined, 4],
+    [14, 22, 20, 8, 9, 10, 3, 2, undefined],
+    [13, 9, 23, 24, 22, 4, 21, undefined, 18],
+    [11, 14, 13, 17, 0, 23, 18, 16, undefined],
+    [1, 2, 14, 15, 23, 8, 11, 20, undefined],
+    [19, 15, 8, 18, 24, 20, 14, 7, undefined],
+    [0, 21, 22, 14, 10, 6, 15, undefined, 15]
 ];
 
 const CHAR_STRINGS = [
@@ -119,6 +119,8 @@ document.getElementById('ttrc4').addEventListener('change', (e) => toggleTTRCExc
 document.getElementById('ttrc5').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 4));
 document.getElementById('ttrc6').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 5));
 document.getElementById('ttrc7').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 6));
+document.getElementById('ttrc8').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 7));
+document.getElementById('ttrc9').addEventListener('change', (e) => toggleTTRCExclusions(e.target, 8));
 
 function toggleVanillaExclusions(checkbox) {
 	for (let i = 0; i < customExclusions.length; i++) {
@@ -132,7 +134,10 @@ function toggleVanillaExclusions(checkbox) {
 
 function toggleTTRCExclusions(checkbox, ttrcIndex = 0) {
 	TTRC_EXCLUSIONS.forEach((stages, char) => {
-		setCheckBox(customExclusions[char][stages[ttrcIndex]], checkbox.checked);
+		const stage = stages[ttrcIndex];
+		if (stage >= 0) {
+			setCheckBox(customExclusions[char][stages[ttrcIndex]], checkbox.checked);
+		}
 	});
 }
 
@@ -169,6 +174,9 @@ function resetGridSettings() {
 	document.getElementById('ttrc4').checked = true;
 	document.getElementById('ttrc5').checked = true;
 	document.getElementById('ttrc6').checked = true;
+	document.getElementById('ttrc7').checked = true;
+	document.getElementById('ttrc8').checked = true;
+	document.getElementById('ttrc9').checked = true;
 }
 
 
@@ -274,7 +282,10 @@ function randomize() {
 	document.getElementById('randomizer-id').value = '';
 	document.getElementById('loader').classList.remove('hidden');
 
+	invokeAfterDOMUpdates(calculateUniqueSeed);
+}
 
+function calculateUniqueSeed() {
 	// We set timeout for the initial invocation to allow the loader to show
 	setTimeout(() => {
 		let attempts = 0;
@@ -288,8 +299,13 @@ function randomize() {
 			attempts++;
 		} while (!result);
 
-		console.log(attempts);
+		document.getElementById('attempt-count').innerHTML = attempts;
 	}, 0)
+}
+
+function invokeAfterDOMUpdates(callback) {
+	const intermediate = () => window.requestAnimationFrame(callback);
+	window.requestAnimationFrame(intermediate);
 }
 	
 
